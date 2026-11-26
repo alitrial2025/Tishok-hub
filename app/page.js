@@ -2,9 +2,12 @@
 
 import { Check, Crosshair, Menu, Shirt, ShoppingBag, X } from "lucide-react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
+import useBag from "./use-bag";
+import Logo from "./wordmark";
 import { useEffect, useRef, useState } from "react";
 import Clothesline, { garmentImage } from "./clothesline";
-import { campaigns, hoodies, sizes, validItem } from "./catalog";
+import { campaigns, hoodies, sizes } from "./catalog";
 import { imagePath } from "./media";
 
 const Workshop = dynamic(() => import("./field-notes").then(module => module.Workshop), { loading: StudioLoading, ssr: false });
@@ -24,10 +27,6 @@ const photos = [
   { alt: "Concrete hoodie, back view", file: "concrete-back" },
   { alt: "Signal Orange hoodie, fabric detail", file: "orange-detail" },
 ];
-
-function Logo() {
-  return <span className="wordmark">OFF<span>/</span>FORM<sup>™</sup></span>;
-}
 
 function ProductImage({ index, thumbnail = false, ...props }) {
   return <img src={imagePath(`${thumbnail ? "thumb-" : ""}${photos[index].file}`)} alt={photos[index].alt} width={thumbnail ? 96 : 508} height={thumbnail ? 96 : 508} decoding="async" {...props} />;
@@ -124,8 +123,7 @@ export default function Storefront() {
   const productFrame = useRef(null);
   const fitButton = useRef(null);
   const [size, setSize] = useState("M");
-  const [bag, setBag] = useState([]);
-  const [ready, setReady] = useState(false);
+  const { bag, count, addItems, changeQuantity } = useBag();
   const [added, setAdded] = useState(false);
   const [panel, setPanel] = useState(null);
   const [inspection, setInspection] = useState({ index: 0, view: "inspect" });
@@ -135,22 +133,10 @@ export default function Storefront() {
   const dialog = useRef(null);
   const addTimer = useRef(null);
 
-  useEffect(() => {
-    try {
-      const stored = JSON.parse(localStorage.getItem("offform-bag") || "[]");
-      if (Array.isArray(stored)) {
-        setBag(stored.filter(validItem).map(item => ({ ...item, quantity: Math.min(item.quantity, 20) })));
-      }
-    } catch {}
-    setReady(true);
-    return () => { clearTimeout(addTimer.current); swap.current?.abort(); };
+  useEffect(() => () => {
+    clearTimeout(addTimer.current);
+    swap.current?.abort();
   }, []);
-
-  useEffect(() => {
-    if (ready) {
-      try { localStorage.setItem("offform-bag", JSON.stringify(bag)); } catch {}
-    }
-  }, [bag, ready]);
 
   useEffect(() => {
     const element = dialog.current;
@@ -247,35 +233,12 @@ export default function Storefront() {
     }
   }
 
-  function addItems(items) {
-    setBag(current => {
-      const updated = [...current];
-      for (const item of items) {
-        const index = updated.findIndex(entry => entry.product === item.product && entry.size === item.size);
-        if (index === -1) updated.push(item);
-        else updated[index] = { ...updated[index], quantity: Math.min(20, updated[index].quantity + item.quantity) };
-      }
-      return updated;
-    });
-  }
-
-  function changeQuantity(productIndex, itemSize, delta) {
-    if (delta > 0) {
-      addItems([{ product: productIndex, size: itemSize, quantity: delta }]);
-    } else {
-      setBag(current => current.map(item => item.product === productIndex && item.size === itemSize
-        ? { ...item, quantity: item.quantity + delta } : item).filter(item => item.quantity > 0));
-    }
-  }
-
   function addToBag() {
     changeQuantity(product, size, 1);
     setAdded(true);
     clearTimeout(addTimer.current);
     addTimer.current = setTimeout(() => setAdded(false), 1600);
   }
-
-  const count = bag.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <main>
@@ -288,7 +251,7 @@ export default function Storefront() {
           <a className="brand" href="#top" aria-label="OFF/FORM home"><Logo /></a>
           <nav className="nav" aria-label="Main navigation">
             <a className="current" href="#top">Home</a>
-            <a href="#collection">Shop</a>
+            <Link href="/shop" prefetch={false}>Shop</Link>
             <a href="#workshop">Build a fit</a>
             <button onClick={() => setPanel("lookbook")}>Lookbook</button>
             <button onClick={() => setPanel("about")}>About</button>
@@ -304,7 +267,7 @@ export default function Storefront() {
             <h1>Uniform for<br />the <em>unruly.</em></h1>
             <p>Heavyweight streetwear for life outside the lines. Cut with intent. Worn your way.</p>
             <div className="hero-actions">
-              <a className="primary" href="#collection">Shop the drop</a>
+              <Link className="primary" href="/shop" prefetch={false}>Shop the drop</Link>
               <button className="lookbook-link" onClick={() => setPanel("lookbook")}>View lookbook</button>
             </div>
             <div className="founder-signature">
@@ -355,10 +318,11 @@ export default function Storefront() {
         {[0, 1, 2].map(index => <div className="ticker-group" key={index} aria-hidden="true"><span>DROP 01</span><Crosshair size={17} /><span>UNIFORM FOR THE UNRULY</span><Crosshair size={17} /><span>OFF/FORM STUDIOS</span><Crosshair size={17} /></div>)}
       </div>
 
-      <section className="collection wrap" id="collection">
-        <div className="collection-top">
-          <div><div className="section-label"><span /> DROP 01 / THE COLLECTION</div><h2>The Signal Series<span>.</span></h2></div>
-          <p>One silhouette. Three signals.<br />480 GSM cotton cut for a relaxed fit.</p>
+      <section className="collection rail-campaign" id="collection">
+        <div className="rail-heading wrap">
+          <div className="rail-edition"><span>OFF/FORM STUDIOS</span><span>SIGNAL SERIES / 01</span></div>
+          <h2>The Signal Series<span>.</span></h2>
+          <p>Three heavyweight hoodies. One relaxed silhouette.</p>
         </div>
         <Clothesline products={hoodies} onInspect={openInspection} />
       </section>
@@ -385,8 +349,8 @@ export default function Storefront() {
           {panel === "bag" && <Bag items={bag} onQuantity={changeQuantity} onClose={() => setPanel(null)} />}
           {panel === "lookbook" && <Lookbook onInspect={openInspection} />}
           {panel === "inspect" && <GarmentPanel key={`${inspection.index}-${inspection.view}`} index={inspection.index} initialView={inspection.view} initialSize={size} onAdd={addItems} onTry={showOnModel} />}
-          {panel === "about" && <div className="about-copy"><div className="section-label"><span /> OFF/FORM STUDIOS</div><p>OFF/FORM is an independent streetwear label focused on heavyweight fabrics, relaxed silhouettes, and industrial graphics.</p><p>Drop 01 starts with a single piece in three colors. The Signal Hoodie is cut from 480 GSM cotton.</p><a className="primary" href="#collection" onClick={() => setPanel(null)}>Shop the drop</a></div>}
-          {panel === "menu" && <nav className="mobile-nav" aria-label="Mobile navigation"><a href="#top" onClick={() => setPanel(null)}>Home</a><a href="#collection" onClick={() => setPanel(null)}>Shop</a><a href="#workshop" onClick={() => setPanel(null)}>Build a fit</a><button onClick={() => setPanel("lookbook")}>Lookbook</button><button onClick={() => setPanel("about")}>About</button></nav>}
+          {panel === "about" && <div className="about-copy"><div className="section-label"><span /> OFF/FORM STUDIOS</div><p>OFF/FORM is an independent streetwear label focused on heavyweight fabrics, relaxed silhouettes, and industrial graphics.</p><p>Drop 01 starts with a single piece in three colors. The Signal Hoodie is cut from 480 GSM cotton.</p><Link className="primary" href="/shop" onClick={() => setPanel(null)}>Shop the drop</Link></div>}
+          {panel === "menu" && <nav className="mobile-nav" aria-label="Mobile navigation"><a href="#top" onClick={() => setPanel(null)}>Home</a><Link href="/shop" onClick={() => setPanel(null)}>Shop</Link><a href="#workshop" onClick={() => setPanel(null)}>Build a fit</a><button onClick={() => setPanel("lookbook")}>Lookbook</button><button onClick={() => setPanel("about")}>About</button></nav>}
         </div>
       </dialog>
     </main>

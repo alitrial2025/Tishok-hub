@@ -307,3 +307,26 @@ button.primary:disabled { opacity: .62; cursor: wait; transform: none; }
   .garment-spec dl div { padding: 5px 0; }
   .garment-actions .primary { margin-left: 0; }
 }
+
+/* The rack is staged as a single campaign image, with interactive garments in the foreground. */
+.rail-campaign { position: relative; isolation: isolate; overflow: hidden; padding: clamp(48px, 6vw, 90px) 0 30px; background: radial-gradient(ellipse at 50% 65%, #60574b 0%, #342e26 48%, #1b1814 82%); }
+.rail-campaign::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: repeating-linear-gradient(130deg, #f5f1ea07 0 1px, transparent 1px 4px), linear-gradient(0deg, #171613, transparent 23%); }
+.rail-heading { text-align: center; }
+.rail-edition { display: flex; justify-content: space-between; color: #d7cabc; font: 10px var(--mono); letter-spacing: .14em; padding-bottom: 13px; border-bottom: 1px solid var(--line); }
+.rail-heading h2 { margin: clamp(23px, 4vw, 53px) 0 10px; font-size: clamp(43px, 8.25vw, 130px); font-weight: 700; text-transform: uppercase; letter-spacing: -.085em; }
+.rail-heading p { margin: 0; color: #d7cabc; font-size: clamp(12px, 1.15vw, 16px); }
+.rail-campaign .rack { background: none; border: 0; border-radius: 0; margin-top: 22px; overflow: visible; }
+.rail-campaign .rack-stage { height: clamp(320px, 46vw, 680px); background: none; --rail-top: clamp(19px, 3vw, 43px); }
+.rail-campaign .rack-bar { left: 0; right: 0; height: 7px; border-radius: 0; box-shadow: 0 10px 13px #120e09a8; }
+.rail-campaign .rack-bar::before, .rail-campaign .rack-bar::after { display: none; }
+.rail-campaign .rack-stage::after { inset: auto 10% 4%; height: 14%; background: radial-gradient(ellipse at 20% 53%, #18120ec0, transparent 27%), radial-gradient(ellipse at 50% 47%, #18120ee0, transparent 31%), radial-gradient(ellipse at 80% 56%, #18120ecc, transparent 30%); filter: blur(8px); }
+.rail-campaign .hanging-piece { width: clamp(140px, 31%, 430px); top: calc(var(--rail-top) - 6px); }
+.rail-campaign .rack-head { border: 0; padding: 0 0 11px; }
+.rail-campaign .rack-detail { border-top: 1px solid var(--line); padding: 12px 0 0; }
+.rail-campaign .rack-head, .rail-campaign .rack-detail { width: min(100% - 112px, 1450px); margin-inline: auto; }
+@media (max-width: 760px) {
+  .rail-campaign .rack { margin-top: 17px; }
+  .rail-campaign .rack-stage { height: clamp(207px, 57vw, 375px); }
+  .rail-campaign .hanging-piece { width: clamp(110px, 36%, 240px); }
+  .rail-campaign .rack-head, .rail-campaign .rack-detail { width: calc(100% - 34px); }
+}

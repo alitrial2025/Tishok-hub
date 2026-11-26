@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { products } from "./catalog";
@@ -42,7 +43,7 @@ export default function Bag({ items, onQuantity, onClose }) {
   }
 
   if (!items.length) {
-    return <div className="empty"><ShoppingBag size={30} /><p>Your bag is empty.</p><a href="#collection" className="primary" onClick={onClose}>Explore the drop</a></div>;
+    return <div className="empty"><ShoppingBag size={30} /><p>Your bag is empty.</p><Link href="/shop" className="primary" onClick={onClose} prefetch={false}>Explore the drop</Link></div>;
   }
 
   return <>

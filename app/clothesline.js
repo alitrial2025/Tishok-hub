@@ -104,10 +104,6 @@ export default function Clothesline({ products, onInspect }) {
 
   return (
     <div className="rack">
-      <div className="rack-head">
-        <span><Hand size={16} /> Drag the hoodies along the rail</span>
-        <button onClick={() => { setPositions(homePositions); setReleased(null); }} disabled={positions.every((position, index) => position === homePositions[index])}>Reset rail</button>
-      </div>
       <p className="sr-only" id="rack-instructions">Use the left and right arrow keys to slide a hoodie. Press Enter to inspect it.</p>
       <div ref={rail} className="rack-stage" data-entered={entered} aria-label="Clothes rail">
         <div className="rack-bar" aria-hidden="true" />
@@ -120,6 +116,10 @@ export default function Clothesline({ products, onInspect }) {
             {entered && <img src={garmentImage(index)} alt="" loading="lazy" decoding="async" width="520" height="606" draggable={false} />}
           </button>
         ))}
+      </div>
+      <div className="rack-head">
+        <span><Hand size={16} /> Drag the hoodies along the rail</span>
+        <button onClick={() => { setPositions(homePositions); setReleased(null); }} disabled={positions.every((position, index) => position === homePositions[index])}>Reset rail</button>
       </div>
       <div className="rack-detail">
         <div>
