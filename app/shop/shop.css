@@ -1,10 +1,38 @@
 .shop-page { min-height: 100svh; background: radial-gradient(ellipse at 65% 38%, #39332a, var(--ink) 76%); }
 .shop-header { padding-bottom: 26px; }
 .shop-sheet { position: relative; isolation: isolate; display: grid; grid-template-columns: 40% 60%; min-height: clamp(610px, 51vw, 760px); overflow: hidden; margin-bottom: 32px; border: 1px solid var(--line); border-radius: 13px; background: #26221d; }
-.shop-paper { z-index: 1; display: grid; align-items: center; position: relative; color: var(--ink); }
-.shop-paper::before, .shop-paper::after { content: ""; position: absolute; pointer-events: none; inset: 0 -49px 0 0; clip-path: polygon(0 0, 95% 0, 96% 3%, 94% 5%, 97% 8%, 96% 10%, 98% 13%, 96% 16%, 97% 19%, 95% 21%, 96% 23%, 94% 25%, 95% 28%, 93% 31%, 94% 34%, 92% 36%, 94% 38%, 93% 41%, 96% 43%, 95% 45%, 96% 47%, 94% 50%, 95% 53%, 93% 56%, 94% 60%, 96% 62%, 95% 65%, 97% 68%, 95% 71%, 97% 73%, 94% 76%, 95% 79%, 93% 81%, 94% 85%, 92% 88%, 94% 91%, 93% 94%, 96% 97%, 95% 100%, 0 100%); }
-.shop-paper::before { z-index: -2; transform: translateX(6px); background: #a39887; }
-.shop-paper::after { z-index: -1; background-color: #e9e1d3; background-image: radial-gradient(ellipse at 20% 32%, #fffaf140, transparent 60%), repeating-linear-gradient(74deg, #7770640a 0 1px, transparent 1px 4px), repeating-linear-gradient(162deg, #ffffff32 0 1px, transparent 1px 5px), linear-gradient(90deg, #f1eadd, #e5dbca 72%, #c8bdac); }
+.shop-paper {
+  --tear: polygon(0 0, 96% 0, 95% 9%, 97% 17%, 96% 24%, 95% 30%, 96% 37%, 94% 45%, 95% 53%, 97% 62%, 96% 72%, 98% 80%, 96% 89%, 97% 95%, 96% 100%, 0 100%);
+  z-index: 1;
+  display: grid;
+  align-items: center;
+  position: relative;
+  color: var(--ink);
+  filter: drop-shadow(8px 4px 8px #100c0880);
+}
+.shop-paper::before, .shop-paper::after { content: ""; position: absolute; pointer-events: none; inset: 0 -49px 0 0; clip-path: var(--tear); }
+.shop-paper::before { z-index: -2; transform: translateX(2px); background: linear-gradient(0deg, #b2a590, #f4ebdc 26%, #b9ac99 52%, #f1e8d9 80%, #bdb09b); }
+.shop-paper::after { z-index: -1; background: radial-gradient(ellipse at 28% 26%, #fffaf175, transparent 68%), repeating-linear-gradient(76deg, #786c5b08 0 1px, transparent 1px 4px), repeating-linear-gradient(163deg, #fff3 0 1px, transparent 1px 5px), linear-gradient(90deg, #f1eadd, #e5dbca 79%, #c9bba6 100%); }
+@supports (clip-path: shape(from 0 0, line to 100% 0, close)) {
+  .shop-paper {
+    --tear: shape(from 0 0, line to 96% 0,
+      curve to 95.3% 7% with 96.8% 2% / 94.7% 4%,
+      curve to 96.5% 14% with 95.8% 9% / 97.1% 11%,
+      curve to 97.1% 20% with 96.2% 16% / 97.4% 18%,
+      curve to 95.1% 29% with 97.2% 23% / 94.5% 27%,
+      curve to 95.8% 35% with 95.7% 31% / 96.2% 33%,
+      curve to 94.4% 44% with 95.2% 37% / 93.8% 41%,
+      curve to 94.9% 50% with 95.2% 46% / 95.4% 48%,
+      curve to 96.2% 57% with 94.5% 52% / 96.5% 54%,
+      curve to 97.3% 65% with 95.9% 59% / 97.8% 62%,
+      curve to 96.3% 72% with 96.8% 67% / 95.8% 70%,
+      curve to 97.6% 81% with 97% 75% / 98.1% 78%,
+      curve to 96.1% 89% with 97.1% 83% / 95.7% 86%,
+      curve to 97% 95% with 96.2% 91% / 97.6% 93%,
+      curve to 96.2% 100% with 96.5% 97% / 96.1% 99%,
+      line to 0 100%, close);
+  }
+}
 .shop-paper-content { padding: clamp(30px, 4.9vw, 77px); padding-right: 15px; }
 .shop-label { display: flex; gap: 7px; align-items: center; color: #584839; margin: 0 0 19px; }
 .shop-label span { width: 6px; height: 6px; border-radius: 50%; background: #c84120; }
@@ -23,12 +51,12 @@
 .wheel-controls span { font: 10px var(--mono); letter-spacing: .09em; }
 .shop-wheel { position: relative; overflow: hidden; touch-action: pan-y; background: radial-gradient(ellipse at 73% 49%, #655747, #2a241e 54%, #1d1a16 94%); }
 .wheel-ring { position: absolute; left: 19%; top: 50%; width: 101%; height: 97%; border-radius: 50%; transform: translate(-50%, -50%); border: 1px solid #f5f1ea41; box-shadow: 0 0 0 18px #f5f1ea09, inset 0 0 0 16px #f5f1ea07; pointer-events: none; }
-.wheel-piece { display: grid; place-items: center; position: absolute; z-index: 1; left: var(--wheel-x); top: var(--wheel-y); width: 41%; height: 34%; padding: 6px; transform: translate(-50%, -50%) rotate(var(--wheel-angle)) scale(.87); opacity: .67; border: 1px solid #e9e1d35c; border-radius: 9px; background: linear-gradient(145deg, #726758, #443a30 75%); transition: left .48s cubic-bezier(.22,.7,.17,1), top .48s cubic-bezier(.22,.7,.17,1), transform .48s cubic-bezier(.22,.7,.17,1), opacity .37s, border-color .3s; }
-.wheel-piece[data-position="0"] { z-index: 2; transform: translate(-50%, -50%) scale(1.13); opacity: 1; border-color: var(--orange); box-shadow: 0 12px 36px #120d08ac; }
+.wheel-piece { display: grid; place-items: center; position: absolute; z-index: 1; left: var(--wheel-x); top: var(--wheel-y); width: 41%; height: 35%; padding: 0; transform: translate(-50%, -50%) rotate(var(--wheel-angle)) scale(.85); opacity: .64; border: 0; border-radius: 45%; background: transparent; transition: left .48s cubic-bezier(.22,.7,.17,1), top .48s cubic-bezier(.22,.7,.17,1), transform .48s cubic-bezier(.22,.7,.17,1), opacity .37s; }
+.wheel-piece[data-position="0"] { z-index: 2; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
 .wheel-piece[data-position="-2"], .wheel-piece[data-position="2"] { opacity: 0; pointer-events: none; }
 .wheel-piece:not([aria-pressed="true"]):hover { opacity: 1; }
-.wheel-piece img { width: 100%; height: 100%; max-height: 100%; min-height: 0; object-fit: contain; pointer-events: none; user-select: none; filter: drop-shadow(5px 9px 8px #17141085); }
-.wheel-piece img[src$="field-cargo.webp"], .wheel-piece img[src$="slash-cap.webp"] { width: auto; max-width: 100%; border-radius: 4px; }
+.wheel-piece img { width: 100%; height: 100%; max-height: 100%; min-height: 0; object-fit: contain; pointer-events: none; user-select: none; filter: drop-shadow(8px 17px 12px #15100c9c); }
+.wheel-piece[data-position="0"] img { filter: drop-shadow(8px 20px 13px #150f0ac9); }
 .wheel-hint { position: absolute; z-index: 3; bottom: 13px; right: 15px; color: #e1d1bf; font: 9px var(--mono); letter-spacing: .13em; pointer-events: none; }
 @media (max-width: 760px) {
   .shop-header { grid-template-columns: 1fr auto auto; gap: 8px; padding-bottom: 14px; }
@@ -38,9 +66,14 @@
   .shop-header .bag-count { min-width: 18px; height: 18px; }
   .shop-header .wordmark { font-size: clamp(19px, 5.75vw, 26px); }
   .shop-sheet { grid-template-columns: 1fr; min-height: auto; }
-  .shop-paper { min-height: 230px; align-items: start; }
-  .shop-paper::before, .shop-paper::after { inset: 0 0 -18px; clip-path: polygon(0 0, 100% 0, 100% 94%, 97% 95%, 94% 93%, 91% 96%, 88% 95%, 85% 97%, 80% 96%, 78% 98%, 75% 97%, 72% 99%, 68% 97%, 64% 98%, 61% 96%, 58% 97%, 54% 95%, 51% 96%, 48% 94%, 43% 97%, 39% 94%, 36% 96%, 33% 93%, 29% 95%, 25% 94%, 20% 97%, 16% 95%, 12% 97%, 9% 96%, 6% 98%, 3% 96%, 0 97%); }
-  .shop-paper::before { transform: translateY(4px); }
+  .shop-paper {
+    --tear: polygon(0 0, 100% 0, 100% 97%, 94% 96%, 87% 98%, 77% 97%, 68% 99%, 56% 96%, 47% 97%, 36% 95%, 27% 97%, 15% 96%, 7% 98%, 0 97%);
+    min-height: 230px;
+    align-items: start;
+    filter: drop-shadow(2px 7px 7px #100c0877);
+  }
+  .shop-paper::before, .shop-paper::after { inset: 0 0 -18px; }
+  .shop-paper::before { transform: translateY(2px); background: linear-gradient(90deg, #bcaf99, #f2e9d9, #b3a590); }
   .shop-paper-content { display: grid; grid-template-columns: 1fr 1fr; align-items: center; column-gap: 10px; padding: 20px 16px 23px; }
   .shop-label { grid-column: 1 / -1; margin-bottom: 10px; font-size: 8px; }
   .shop-paper h1 { grid-row: 2 / span 3; margin: 0; font-size: clamp(54px, 16vw, 88px); }
@@ -52,4 +85,23 @@
   .wheel-controls { grid-column: 2; margin-top: 9px; gap: 6px; }
   .wheel-controls button { min-height: 27px; padding: 3px 5px; }
   .shop-wheel { min-height: clamp(340px, 105vw, 520px); }
+}
+
+@supports (clip-path: shape(from 0 0, line to 100% 0, close)) {
+  @media (max-width: 760px) {
+    .shop-paper {
+      --tear: shape(from 0 0, line to 100% 0, line to 100% 97%,
+        curve to 92% 96% with 97% 98% / 95% 95%,
+        curve to 85% 98% with 89% 96% / 89% 99%,
+        curve to 76% 97% with 81% 97% / 80% 96%,
+        curve to 66% 98.5% with 73% 98% / 68% 99%,
+        curve to 56% 96% with 63% 98% / 60% 95.5%,
+        curve to 46% 97% with 51% 96% / 50% 98%,
+        curve to 35% 95.7% with 42% 96% / 40% 94.8%,
+        curve to 27% 96.8% with 32% 96.5% / 30% 97.4%,
+        curve to 16% 96% with 23% 96.4% / 20% 94.8%,
+        curve to 7% 97.8% with 13% 97% / 11% 98.4%,
+        curve to 0 97% with 4% 97% / 2% 96.5%, close);
+    }
+  }
 }

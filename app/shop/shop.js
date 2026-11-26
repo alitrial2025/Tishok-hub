@@ -101,7 +101,7 @@ export default function Shop() {
             style={{ "--wheel-x": `${19 + 49 * Math.cos(angle)}%`, "--wheel-y": `${50 + 43 * Math.sin(angle)}%`, "--wheel-angle": `${relative * 14}deg` }}
             aria-label={`${entry.title}, ${entry.name}`} aria-pressed={index === active} tabIndex={Math.abs(relative) === 2 ? -1 : 0}
             onClick={event => { if (event.detail === 0 || !ignoreClick.current) select(index); }}>
-            <img src={imagePath(index < 3 ? `garment-${index}` : entry.file)} alt="" draggable={false} decoding="async" />
+            <img src={imagePath(index < 3 ? `garment-${index}` : `${entry.file}-cutout`)} alt="" draggable={false} decoding="async" />
           </button>;
         })}
         <span className="wheel-hint">SWIPE OR SELECT A PIECE</span>
