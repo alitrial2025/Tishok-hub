@@ -3,7 +3,7 @@
 import { Check, ShoppingBag, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { hoodies, products, studioPath } from "../catalog";
 import { imagePath } from "../media";
 import useBag from "../use-bag";
@@ -12,22 +12,29 @@ import "./shop.css";
 
 const Bag = dynamic(() => import("../bag"), { ssr: false, loading: () => <p role="status">Loading bag…</p> });
 const total = products.length;
-const wrapIndex = index => (index + total) % total;
+const arc = 360 / total;
+const halfway = Math.floor(total / 2);
+const wrapIndex = index => ((index % total) + total) % total;
+const shortestStep = (from, to) => wrapIndex(to - from + halfway) - halfway;
 
 export default function Shop() {
-  const [active, setActive] = useState(0);
+  const [turn, setTurn] = useState(0);
+  const active = wrapIndex(turn);
   const [size, setSize] = useState("M");
   const [added, setAdded] = useState(false);
   const [bagOpen, setBagOpen] = useState(false);
   const { bag, count, addItems, changeQuantity } = useBag();
   const drawer = useRef(null);
   const gesture = useRef(null);
+  const gestureFrame = useRef(null);
   const ignoreClick = useRef(false);
   const product = products[active];
 
+  useEffect(() => () => cancelAnimationFrame(gestureFrame.current), []);
+
   function select(index) {
     if (index === active) return;
-    setActive(index);
+    setTurn(current => current + shortestStep(active, index));
     setAdded(false);
     if (!products[index].sizes.includes(size)) setSize(products[index].sizes[0] === "One size" ? "One size" : "M");
   }
@@ -35,25 +42,51 @@ export default function Shop() {
   function handleKey(event) {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     event.preventDefault();
-    select(wrapIndex(active + (event.key === "ArrowLeft" ? -1 : 1)));
+    const index = wrapIndex(active + (event.key === "ArrowLeft" ? -1 : 1));
+    select(index);
+    event.currentTarget.querySelectorAll(".wheel-piece")[index].focus({ preventScroll: true });
   }
 
   function startGesture(event) {
     if (!event.isPrimary || event.button !== 0) return;
     ignoreClick.current = false;
-    gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY, distance: 0, moved: false };
   }
 
-  function finishGesture(event) {
+  function moveGesture(event) {
     const start = gesture.current;
-    gesture.current = null;
     if (start?.id !== event.pointerId) return;
     const dx = event.clientX - start.x;
     const dy = event.clientY - start.y;
-    const distance = Math.abs(dx) > Math.abs(dy) ? dx : dy;
-    if (Math.abs(distance) < 38) return;
-    ignoreClick.current = true;
-    select(wrapIndex(active + (distance < 0 ? 1 : -1)));
+    const distance = event.pointerType === "mouse" && Math.abs(dy) > Math.abs(dx) ? dy : dx;
+    const wheel = event.currentTarget;
+    if (!start.moved && Math.abs(distance) < 8) return;
+    if (!start.moved) {
+      start.moved = true;
+      ignoreClick.current = true;
+      wheel.dataset.dragging = "true";
+      wheel.setPointerCapture(event.pointerId);
+    }
+    start.distance = distance;
+    if (gestureFrame.current !== null) return;
+    gestureFrame.current = requestAnimationFrame(() => {
+      gestureFrame.current = null;
+      wheel.style.setProperty("--wheel-drag", `${Math.max(-arc, Math.min(arc, start.distance * 0.44))}deg`);
+    });
+  }
+
+  function finishGesture(event, cancelled = false) {
+    const start = gesture.current;
+    if (start?.id !== event.pointerId) return;
+    gesture.current = null;
+    cancelAnimationFrame(gestureFrame.current);
+    gestureFrame.current = null;
+    const wheel = event.currentTarget;
+    delete wheel.dataset.dragging;
+    wheel.style.removeProperty("--wheel-drag");
+    if (!cancelled && start.moved && Math.abs(start.distance) >= 38) {
+      select(wrapIndex(active + (start.distance < 0 ? 1 : -1)));
+    }
   }
 
   function openBag() {
@@ -95,13 +128,15 @@ export default function Shop() {
           </div>
         </div>
       </div>
-      <div className="shop-wheel" role="region" aria-roledescription="carousel" aria-label="Collection products" onKeyDown={handleKey} onPointerDown={startGesture} onPointerUp={finishGesture} onPointerCancel={() => { gesture.current = null; }}>
-        <div className="wheel-ring" aria-hidden="true" />
+      <div className="shop-wheel" role="region" aria-roledescription="carousel" aria-label="Collection products"
+        style={{ "--wheel-turn": `${-turn * arc}deg` }}
+        onKeyDown={handleKey} onPointerDown={startGesture} onPointerMove={moveGesture}
+        onPointerUp={finishGesture} onPointerCancel={event => finishGesture(event, true)} onLostPointerCapture={event => { if (event.target === event.currentTarget) finishGesture(event, true); }}>
+        <div className="wheel-ring" aria-hidden="true"><span className="wheel-axle" /></div>
         {products.map((entry, index) => {
-          const relative = ((index - active + total + 2) % total) - 2;
-          const angle = relative * Math.PI / 4;
+          const relative = shortestStep(active, index);
           return <button key={entry.id} className="wheel-piece" data-position={relative}
-            style={{ "--wheel-x": `${19 + 49 * Math.cos(angle)}%`, "--wheel-y": `${50 + 43 * Math.sin(angle)}%`, "--wheel-angle": `${relative * 14}deg` }}
+            style={{ "--piece-angle": `${index * arc}deg`, "--piece-tilt": `${relative * 13}deg` }}
             aria-label={`${entry.title}, ${entry.name}`} aria-pressed={index === active} tabIndex={Math.abs(relative) === 2 ? -1 : 0}
             onClick={event => { if (event.detail === 0 || !ignoreClick.current) select(index); }}>
             <img src={imagePath(index < 3 ? `garment-${index}` : `${entry.file}-cutout`)} alt="" draggable={false} decoding="async" />
@@ -109,7 +144,7 @@ export default function Shop() {
         })}
         <div className="wheel-caption">
           <span><b>{String(active + 1).padStart(2, "0")}</b> / {String(total).padStart(2, "0")}</span>
-          <span className="wheel-hint">SWIPE OR SELECT A PIECE</span>
+          <span className="wheel-hint">DRAG TO ROTATE</span>
         </div>
       </div>
     </section>

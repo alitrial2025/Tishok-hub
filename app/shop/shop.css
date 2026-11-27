@@ -53,16 +53,82 @@
 .wheel-positions button::after { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #40372c80; transition: background .22s, transform .22s; }
 .wheel-positions button:hover::after { background: var(--ink); }
 .wheel-positions button[aria-pressed="true"]::after { background: #b9391e; transform: scale(1.55); }
-.shop-wheel { position: relative; overflow: hidden; touch-action: pan-y; background: radial-gradient(ellipse at 67% 49%, #6a5946, #322a22 45%, #1d1a16 84%); }
-.wheel-ring { position: absolute; left: 19%; top: 50%; width: 101%; height: 97%; border-radius: 50%; transform: translate(-50%, -50%); border: 1px solid #f5f1ea41; box-shadow: 0 0 0 18px #f5f1ea09, inset 0 0 0 16px #f5f1ea07; pointer-events: none; }
-.wheel-ring::before { content: ""; position: absolute; inset: -13px; border-radius: 50%; background: repeating-conic-gradient(from 90deg, #ebd6ba65 0deg 1deg, transparent 1deg 7.5deg); mask-image: radial-gradient(ellipse closest-side, transparent calc(100% - 6px), #000 calc(100% - 5px) 100%, transparent 100%); transform: rotate(-2deg); }
-.wheel-ring::after { content: ""; position: absolute; inset: 15px; border-radius: 50%; border: 1px solid #f5f1ea18; }
-.wheel-piece { display: grid; place-items: center; position: absolute; z-index: 1; left: var(--wheel-x); top: var(--wheel-y); width: 41%; height: 35%; padding: 0; transform: translate(-50%, -50%) rotate(var(--wheel-angle)) scale(.85); opacity: .64; border: 0; border-radius: 45%; background: transparent; transition: left .48s cubic-bezier(.22,.7,.17,1), top .48s cubic-bezier(.22,.7,.17,1), transform .48s cubic-bezier(.22,.7,.17,1), opacity .37s; }
-.wheel-piece[data-position="0"] { z-index: 2; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+.shop-wheel {
+  --wheel-axis: 34%;
+  --wheel-radius: min(38cqw, 33cqh);
+  --wheel-drag: 0deg;
+  --wheel-duration: .64s;
+  --wheel-ease: cubic-bezier(.2,.75,.22,1);
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  container-type: size;
+  touch-action: pan-y;
+  cursor: grab;
+  background: radial-gradient(ellipse at 67% 49%, #6a5946, #322a22 45%, #1d1a16 84%);
+}
+.shop-wheel[data-dragging="true"], .shop-wheel[data-dragging="true"] .wheel-piece { cursor: grabbing; }
+.wheel-ring {
+  position: absolute;
+  left: var(--wheel-axis);
+  top: 50%;
+  width: calc(var(--wheel-radius) * 2);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #e7d1b15c;
+  box-shadow: 0 0 0 9px #f5f1ea0d, inset 0 0 0 13px #f5f1ea07;
+  background: radial-gradient(circle, #201a1666, #43372b59 65%, transparent 72%);
+  pointer-events: none;
+}
+.wheel-ring::before {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: conic-gradient(from 40deg, #ff663c 0deg 26deg, transparent 26deg), repeating-conic-gradient(from 90deg, #ebd6ba90 0deg 1deg, transparent 1deg 7.5deg);
+  mask-image: radial-gradient(closest-side, transparent calc(100% - 7px), #000 calc(100% - 6px) 100%, transparent 100%);
+  transform: rotate(calc(var(--wheel-turn) + var(--wheel-drag)));
+  transition: transform var(--wheel-duration) var(--wheel-ease);
+}
+.wheel-ring::after { content: ""; position: absolute; inset: 16px; border-radius: 50%; border: 1px solid #f5f1ea20; }
+.wheel-axle { position: absolute; inset: 46%; display: grid; place-items: center; border-radius: 50%; border: 1px solid #ddc1a28c; box-shadow: 0 0 0 7px #f5f1ea0b; }
+.wheel-axle::after { content: ""; width: 20%; aspect-ratio: 1; border-radius: 50%; background: #f5dfc3; }
+.wheel-piece {
+  --orbit: calc(var(--piece-angle) + var(--wheel-turn) + var(--wheel-drag));
+  display: grid;
+  place-items: center;
+  position: absolute;
+  z-index: 1;
+  left: var(--wheel-axis);
+  top: 50%;
+  width: 41%;
+  height: 35%;
+  padding: 0;
+  transform: translate(-50%, -50%) rotate(var(--orbit)) translateX(var(--wheel-radius)) rotate(calc(-1 * var(--orbit)));
+  opacity: .66;
+  border: 0;
+  border-radius: 45%;
+  background: transparent;
+  transition: transform var(--wheel-duration) var(--wheel-ease), opacity .32s;
+}
+.wheel-piece[data-position="0"] { z-index: 2; opacity: 1; }
 .wheel-piece[data-position="-2"], .wheel-piece[data-position="2"] { opacity: 0; pointer-events: none; }
 .wheel-piece:not([aria-pressed="true"]):hover { opacity: 1; }
-.wheel-piece img { width: 100%; height: 100%; max-height: 100%; min-height: 0; object-fit: contain; pointer-events: none; user-select: none; filter: drop-shadow(8px 17px 12px #15100c9c); }
-.wheel-piece[data-position="0"] img { filter: drop-shadow(8px 20px 13px #150f0ac9); }
+.wheel-piece img {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  transform: rotate(var(--piece-tilt)) scale(.82);
+  filter: drop-shadow(8px 17px 12px #15100c9c);
+  transition: transform var(--wheel-duration) var(--wheel-ease);
+}
+.wheel-piece[data-position="0"] img { transform: rotate(0deg) scale(1.24); filter: drop-shadow(8px 20px 13px #150f0ac9); }
+.shop-wheel[data-dragging="true"] .wheel-ring::before, .shop-wheel[data-dragging="true"] .wheel-piece { transition: none; }
 .wheel-caption { position: absolute; z-index: 3; bottom: 0; right: 0; left: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 17px 13px 50px; background: linear-gradient(0deg, #1b1712db, transparent); color: #e1d1bf; font: 9px var(--mono); letter-spacing: .13em; pointer-events: none; }
 .wheel-caption b { color: var(--orange); font-weight: 400; }
 @media (max-width: 760px) {
@@ -94,7 +160,7 @@
   .wheel-positions { gap: 1px; }
   .wheel-positions button { width: clamp(12px, 3.4vw, 16px); }
   .wheel-caption { padding-left: 13px; }
-  .shop-wheel { min-height: clamp(340px, 105vw, 520px); }
+  .shop-wheel { --wheel-axis: 31%; min-height: clamp(340px, 105vw, 520px); }
 }
 
 @supports (clip-path: shape(from 0 0, line to 100% 0, close)) {
