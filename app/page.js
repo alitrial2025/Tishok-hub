@@ -307,13 +307,15 @@ export default function Storefront() {
 
         <div className="hero-footer wrap">
           <div className="campaign"><Crosshair size={16} /><span>Tishok Hub STUDIOS<small> VOL. 01 — FIELD NOTES</small></span></div>
-          <a href="#collection" className="scroll-link">EXPLORE THE RAIL</a>
-
         </div>
       </section>
 
-      <div className="ticker" aria-label="Drop 01, Uniform for the Unruly">
-        {[0, 1, 2].map(index => <div className="ticker-group" key={index} aria-hidden="true"><span>DROP 01</span><Crosshair size={17} /><span>UNIFORM FOR THE UNRULY</span><Crosshair size={17} /><span>Tishok Hub STUDIOS</span><Crosshair size={17} /></div>)}
+      <div className="drop-strip">
+        <div className="wrap drop-strip-inner">
+          <span className="drop-label">DROP <b>01</b></span>
+          <strong>Uniform for the Unruly</strong>
+          <a href="#collection">Explore the rail</a>
+        </div>
       </div>
 
       <section className="collection rail-campaign" id="collection">

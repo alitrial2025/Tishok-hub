@@ -87,7 +87,9 @@ export default function Shop() {
           </button>
           <div className="wheel-controls" aria-label="Browse products">
             <button onClick={() => select(wrapIndex(active - 1))}>Prev</button>
-            <span>{String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
+            <div className="wheel-positions" aria-label="Jump to a product">
+              {products.map((entry, index) => <button key={entry.id} type="button" aria-label={`Show ${entry.title}, ${entry.name}`} aria-pressed={index === active} onClick={() => select(index)} />)}
+            </div>
             <button onClick={() => select(wrapIndex(active + 1))}>Next</button>
           </div>
         </div>
@@ -104,7 +106,10 @@ export default function Shop() {
             <img src={imagePath(index < 3 ? `garment-${index}` : `${entry.file}-cutout`)} alt="" draggable={false} decoding="async" />
           </button>;
         })}
-        <span className="wheel-hint">SWIPE OR SELECT A PIECE</span>
+        <div className="wheel-caption">
+          <span><b>{String(active + 1).padStart(2, "0")}</b> / {String(total).padStart(2, "0")}</span>
+          <span className="wheel-hint">SWIPE OR SELECT A PIECE</span>
+        </div>
       </div>
     </section>
 
