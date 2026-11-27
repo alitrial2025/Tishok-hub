@@ -295,18 +295,15 @@ export default function Storefront() {
 
           <div className="feature" id="featured">
             <article className="product-card" aria-label="Featured hoodie">
-              <div className="card-kicker"><span><i /> FEATURED PIECE</span><span>{String(product + 1).padStart(2, "0")} / 03</span></div>
+              <div className="card-kicker"><span><i /> FEATURED PIECE</span><span className="photo-number">{String(photo + 1).padStart(2, "0")} / {String(photos.length).padStart(2, "0")}</span></div>
               <div className="product-frame" ref={productFrame} data-swapping={swapping} data-cutout={Boolean(photos[photo].cutout)}>
                 <HoodieFrame />
                 <ProductImage key={arrival} index={photo} className={arrival ? "card-arrival" : undefined} />
               </div>
               <div className="product-info">
-                <div className="product-actions">
-                  <div className="outfit-controls">
-                    <button className="fit-button" ref={fitButton} aria-disabled={swapping || product === worn} onClick={() => changeOutfit()}><Shirt size={15} /> {product === worn ? "On model" : "Try on model"}</button>
-                    {previousFit && <button className="fit-undo" aria-disabled={swapping} onClick={() => changeOutfit(true)}>Undo</button>}
-                  </div>
-                  <span className="photo-number">{String(photo + 1).padStart(2, "0")} / 06</span>
+                <div className="outfit-controls">
+                  <button className="fit-button" ref={fitButton} aria-disabled={swapping || product === worn} onClick={() => changeOutfit()}><Shirt size={15} /> {product === worn ? "On model" : "Try on model"}</button>
+                  {previousFit && <button className="fit-undo" aria-disabled={swapping} onClick={() => changeOutfit(true)}>Undo</button>}
                 </div>
                 <span className="sr-only" role="status">{fitMessage}</span>
                 <div className="product-title"><h2>Signal Hoodie</h2><strong>${hoodies[product].price}</strong></div>
