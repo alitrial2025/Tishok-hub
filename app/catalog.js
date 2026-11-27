@@ -13,3 +13,7 @@ export const campaigns = ["campaign", "campaign-coal", "campaign-concrete"];
 export const variantKey = (product, size) => `${product.id}-${size === "One size" ? "OS" : size}`;
 export const validItem = item => Number.isInteger(item?.product) && products[item.product]?.sizes.includes(item.size)
   && Number.isSafeInteger(item.quantity) && item.quantity > 0;
+
+export function studioPath(index, view = "inspect") {
+  return `/studio/${hoodies[index].id}${view === "fit" ? "#fit-guide" : ""}`;
+}

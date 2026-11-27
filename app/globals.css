@@ -62,13 +62,16 @@ img { display: block; max-width: 100%; }
 .lookbook-link:hover { color: #ff8b6d; }
 
 .feature { display: flex; gap: 12px; align-items: center; scroll-margin-top: 20px; }
-.product-card { width: clamp(253px, 23.6vw, 350px); border-radius: 20px; background: linear-gradient(145deg, #5c574fbc, #171613e0); border: 1px solid #e6ded148; box-shadow: 0 20px 65px #120e0a5e, inset 0 1px #f5f1ea24; backdrop-filter: blur(20px); padding: 13px; }
-.card-kicker { display: flex; justify-content: space-between; gap: 8px; align-items: center; font: 9px var(--mono); letter-spacing: .1em; color: #f2ece2; padding: 3px 2px 12px; }
+.product-card { width: clamp(253px, 23.6vw, 350px); }
+.card-kicker { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 0 8px 11px; color: #f2ece2; font: 9px var(--mono); letter-spacing: .1em; }
 .card-kicker > span:first-child { display: flex; align-items: center; gap: 7px; }
-.product-frame { aspect-ratio: 1.13; overflow: hidden; position: relative; border-radius: 11px; background: #4a4843; }
-.product-frame > img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
-.photo-number { position: absolute; right: 8px; bottom: 8px; padding: 4px 6px; background: #211e1bc4; border-radius: 4px; font: 9px var(--mono); }
-.outfit-controls { position: absolute; z-index: 1; display: flex; align-items: center; gap: 5px; bottom: 8px; left: 8px; }
+.product-frame { position: relative; aspect-ratio: 350 / 266; isolation: isolate; }
+.hoodie-frame { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.product-frame > img { position: absolute; inset: 12% 20% 7%; width: 60%; height: 81%; object-fit: cover; border-radius: 36% 36% 23% 23% / 26% 26% 16% 16%; }
+.product-frame[data-cutout="true"] > img { inset: 5% 15% 4%; width: 70%; height: 91%; object-fit: contain; border-radius: 0; }
+.product-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-bottom: 11px; margin-bottom: 11px; border-bottom: 1px dashed #e6d7bf43; }
+.photo-number { color: #d2c4b2; white-space: nowrap; font: 9px var(--mono); }
+.outfit-controls { display: flex; align-items: center; gap: 5px; }
 .fit-button, .fit-undo { display: flex; align-items: center; gap: 6px; min-height: 32px; padding: 6px 9px; border: 1px solid #f5f1ea2d; border-radius: 6px; font-size: 11px; font-weight: 700; }
 .fit-button { background: var(--orange); color: var(--ink); }
 .fit-button:not([aria-disabled="true"]):hover { background: #ff815e; }
@@ -79,11 +82,11 @@ img { display: block; max-width: 100%; }
 .card-arrival { animation: card-arrival .51s cubic-bezier(.19,1,.22,1) backwards; }
 @keyframes card-arrival { from { opacity: .15; transform: translateX(18%) scale(.95); } to { opacity: 1; transform: none; } }
 .flying-hoodie { position: fixed; z-index: 10; height: auto; max-width: none; pointer-events: none; clip-path: inset(14% -25% -25%); filter: drop-shadow(6px 18px 17px #120d09a0); }
-.product-info { padding: 13px 2px 1px; }
+.product-info { position: relative; z-index: 1; margin: -6% 8% 0; padding: 11px 12px 13px; border: 1px solid #d0bd9f68; border-radius: 13px 13px 24px 24px; background: linear-gradient(150deg, #40362c, #211c17 80%); box-shadow: 0 14px 31px #120e0a59; }
 .product-title, .product-variant { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .product-title h2 { font-size: 24px; line-height: 1; letter-spacing: -.055em; margin: 0; }
 .product-title strong { font-size: 16px; }
-.product-variant { color: #e0d8cd; font-size: 12px; margin: 5px 0 12px; }
+.product-variant { color: #e0d8cd; font-size: 12px; margin: 5px 0 10px; }
 .swatches { display: flex; align-items: center; gap: 7px; }
 .swatches button { border-radius: 50%; width: 15px; height: 15px; border: 1px solid #f5f1ea61; padding: 0; background: var(--swatch); }
 .swatches button[aria-pressed="true"] { outline: 1px solid var(--paper); outline-offset: 2px; }
@@ -205,6 +208,7 @@ img { display: block; max-width: 100%; }
   .founder-signature { margin-top: 22px; }
   .feature { justify-content: start; }
   .product-card { width: min(100% - 53px, 370px); }
+  .product-info { margin-inline: 4%; padding-inline: 10px; }
   .thumbnail-rail button { width: 40px; height: 40px; }
   .hero-footer { padding-block: 14px; grid-template-columns: 1fr auto; }
   .collection-top { align-items: start; flex-direction: column; gap: 12px; }
@@ -235,21 +239,6 @@ button.primary:disabled { opacity: .62; cursor: wait; transform: none; }
 .studio-dialog[open] { animation: studio-enter .23s cubic-bezier(.2,.7,.3,1); }
 @keyframes studio-enter { from { opacity: 0; transform: translateY(12px) scale(.985); } to { opacity: 1; transform: none; } }
 .studio-dialog .dialog-content { min-height: 0; }
-.garment-content { display: grid; gap: 14px; }
-.garment-content p { margin: 0; }
-.garment-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 24px; align-items: center; }
-.garment-visual { border-radius: 9px; overflow: hidden; background: #4a4843 var(--inspection-placeholder) center / contain no-repeat; position: relative; }
-.garment-visual img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
-.garment-zoom { display: flex; align-items: center; gap: 7px; position: absolute; bottom: 10px; right: 10px; border: 0; border-radius: 5px; color: var(--paper); background: #1e1b17e8; padding: 9px 10px; font-size: 12px; font-weight: 600; }
-.garment-spec .studio-label { color: var(--muted); }
-.garment-spec h3, .lookbook-copy h3 { margin: 8px 0 11px; font-size: clamp(29px, 5vw, 53px); line-height: .9; letter-spacing: -.065em; }
-.garment-spec > p { max-width: 28ch; font-size: 14px; line-height: 1.45; }
-.garment-spec dl { margin: 15px 0; }
-.garment-spec dl div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 8px 0; font-size: 13px; }
-.garment-spec dt { color: var(--muted); }
-.garment-spec dd { margin: 0; font-weight: 700; }
-.garment-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 4px; }
-.garment-actions .primary { margin-left: auto; }
 .studio-switch, .lookbook-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
 .studio-switch > button, .lookbook-tabs > button, .studio-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 7px 10px; background: transparent; border: 1px solid var(--line); border-radius: 5px; font-size: 12px; font-weight: 600; }
 .studio-switch > button[aria-pressed="true"] { background: var(--orange); color: var(--ink); border-color: var(--orange); }
@@ -312,12 +301,6 @@ button.primary:disabled { opacity: .62; cursor: wait; transform: none; }
   .workshop-controls .studio-secondary { padding-inline: 6px; }
   .studio-dialog .dialog-content { padding: 13px; gap: 12px; }
   .lookbook-spread img { min-height: 0; height: clamp(160px, 43vh, 320px); }
-  .garment-grid { grid-template-columns: 1fr; gap: 12px; }
-  .garment-visual img { max-height: 31vh; object-fit: contain; }
-  .garment-spec h3 { margin-bottom: 6px; }
-  .garment-spec dl { margin: 6px 0; }
-  .garment-spec dl div { padding: 5px 0; }
-  .garment-actions .primary { margin-left: 0; }
 }
 
 /* The rack is staged as a single campaign image, with interactive garments in the foreground. */

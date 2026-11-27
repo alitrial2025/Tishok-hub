@@ -1,0 +1,99 @@
+.garment-page { min-height: 100svh; background: radial-gradient(ellipse at 50% 15%, #3d342c, var(--ink) 65%); }
+.garment-header { padding-bottom: 23px; }
+.garment-poster {
+  --poster-ink: #211a15;
+  --poster-accent: #a8361f;
+  position: relative;
+  isolation: isolate;
+  width: min(100% - 85px, 1100px);
+  overflow: hidden;
+  margin-bottom: 40px;
+  padding: clamp(16px, 3.6vw, 45px);
+  color: var(--poster-ink);
+  background: radial-gradient(ellipse at 50% 32%, #faf4e9 10%, #e7dbca 73%, #c7b5a0);
+  box-shadow: 0 28px 75px #0806058c;
+}
+.garment-poster::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: repeating-linear-gradient(94deg, #4e3b2511 0 9px, #fff7eb09 9px 30px, transparent 30px 57px);
+  mask-image: linear-gradient(black, transparent 60%);
+  pointer-events: none;
+}
+.garment-poster::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 61% -18% 4%;
+  background: repeating-conic-gradient(from 83deg at 50% 2%, transparent 0deg 5deg, #503c2c35 5.05deg 5.25deg), repeating-linear-gradient(0deg, transparent 0 23px, #503c2c25 24px 25px);
+  mask-image: linear-gradient(transparent, #0007 32%, #000 64%, transparent);
+  pointer-events: none;
+}
+.poster-topline, .poster-checkout { display: flex; justify-content: space-between; gap: 12px; }
+.poster-topline { align-items: start; color: #322820; font: 700 clamp(8px,1.1vw,13px) / 1.14 var(--mono); letter-spacing: .05em; }
+.poster-topline span:last-child { text-align: right; }
+.poster-topline b { color: var(--poster-accent); }
+.poster-heading {
+  margin: 3% 0 0;
+  text-align: center;
+  font: 800 clamp(106px, 29vw, 329px) / .72 "Barlow Condensed", var(--font);
+  letter-spacing: -.035em;
+  color: #201913;
+  text-shadow: 0 3px #4f3b2a, 0 9px 11px #533f2e75;
+}
+.poster-signature { position: relative; z-index: 2; display: flex; justify-content: end; padding-right: 9%; pointer-events: none; }
+.poster-signature .founder-signature { width: clamp(82px, 22vw, 240px); margin: clamp(-40px, -5vw, -16px) 0 0; transform: rotate(-8deg); }
+.poster-signature .signature { color: var(--poster-accent); }
+.poster-stage { display: grid; grid-template-columns: minmax(100px,1fr) minmax(0,4.4fr) minmax(100px,1fr); align-items: center; position: relative; z-index: 1; margin: clamp(-54px, -4.6vw, -24px) 0 0; }
+.poster-art { display: grid; place-items: center; isolation: isolate; aspect-ratio: 1.14; min-width: 0; }
+.poster-art::before { content: ""; position: absolute; z-index: -1; width: 48%; height: 12%; bottom: 4%; left: 25%; background: #21170d92; border-radius: 50%; filter: blur(20px); }
+.poster-piece, .poster-detail { grid-area: 1 / 1; width: 100%; height: 100%; max-height: clamp(225px, 50vw, 620px); object-fit: contain; }
+.poster-piece { filter: drop-shadow(7px 12px 8px #38281380); }
+.poster-detail { width: 82%; height: 82%; aspect-ratio: 1; border-radius: 3px; box-shadow: 0 19px 29px #3828136d; }
+.poster-spec { display: grid; gap: 12px; font: 700 clamp(9px,1.12vw,13px) / 1.32 var(--mono); letter-spacing: .055em; align-content: center; }
+.poster-spec > div:first-child { padding-bottom: 11px; border-bottom: 1px solid #68513e7a; }
+.poster-spec div span { display: block; }
+.poster-spec strong { display: block; font: 800 clamp(23px,4.4vw,58px) / .9 "Barlow Condensed",var(--font); letter-spacing: -.035em; }
+.poster-spec a, .poster-spec button { width: fit-content; text-underline-offset: 4px; font: 700 clamp(10px,1.12vw,13px) var(--font); text-decoration: underline; text-decoration-color: var(--poster-accent); }
+.poster-spec button { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; border: 0; padding: 0; background: transparent; text-align: right; }
+.poster-spec a:hover, .poster-spec button:hover { color: var(--poster-accent); }
+.poster-color { text-align: right; justify-items: end; }
+.poster-color strong { font-size: clamp(19px,3vw,44px); }
+.poster-color .poster-detail-note { font-size: 8px; }
+.poster-swatches { display: flex; justify-content: end; gap: 7px; }
+.poster-swatches a { width: 15px; height: 15px; border: 1px solid #40332978; border-radius: 50%; background: var(--swatch); }
+.poster-swatches a[aria-current="page"] { outline: 1px solid var(--poster-ink); outline-offset: 2px; }
+.poster-checkout { position: relative; z-index: 2; align-items: end; border-top: 1px solid #68513e88; padding-top: 14px; margin-top: 8px; }
+.poster-size { display: grid; gap: 5px; }
+.poster-size > span { font: 700 10px var(--mono); letter-spacing: .12em; }
+.poster-size .studio-switch button { min-width: 36px; border-color: #49372963; }
+.poster-size .studio-switch button[aria-pressed="true"] { background: var(--poster-ink); color: var(--paper); border-color: var(--poster-ink); }
+.poster-actions { display: flex; flex-wrap: wrap; justify-content: end; align-items: stretch; gap: 8px; }
+.poster-actions .primary { white-space: normal; gap: 7px; }
+.poster-actions .studio-secondary { border-color: #49372963; }
+.studio-measurements { display: grid; gap: 14px; max-width: 850px; padding-block: 12px 55px; scroll-margin-top: 20px; }
+.studio-measurements h2 { margin: 0; color: var(--paper); font-size: clamp(32px, 5.8vw, 68px); letter-spacing: -.06em; }
+.studio-measurements h2 span { color: var(--orange); }
+.studio-measurements p { margin: 0; }
+@media (max-width: 760px) {
+  .garment-header { grid-template-columns: 1fr auto auto; gap: 7px; padding-bottom: 13px; }
+  .garment-header .nav { display: flex; padding: 2px; }
+  .garment-header .nav a { padding: 5px; font-size: 11px; }
+  .garment-header .bag-control { padding: 4px; gap: 4px; font-size: 11px; }
+  .garment-header .bag-count { height: 17px; min-width: 17px; }
+  .garment-poster { width: calc(100% - 27px); }
+}
+@media (max-width: 620px) {
+  .garment-poster { padding-inline: 11px; }
+  .poster-heading { font-size: clamp(79px, 26vw, 155px); }
+  .poster-stage { grid-template-columns: 1fr 1fr; }
+  .poster-spec { grid-row: 2; align-self: start; gap: 6px; }
+  .poster-art { grid-column: 1 / -1; grid-row: 1; }
+  .poster-art::before { bottom: 28%; }
+  .poster-topline { gap: 6px; }
+  .poster-spec > div:first-child { padding-bottom: 5px; }
+  .poster-checkout { align-items: start; flex-direction: column; }
+  .poster-actions { justify-content: start; }
+}

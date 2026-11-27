@@ -4,7 +4,7 @@ import { Check, ShoppingBag, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { products } from "../catalog";
+import { hoodies, products, studioPath } from "../catalog";
 import { imagePath } from "../media";
 import useBag from "../use-bag";
 import Logo from "../wordmark";
@@ -85,6 +85,7 @@ export default function Shop() {
           <button className="primary" onClick={() => { addItems([{ product: active, size, quantity: 1 }]); setAdded(true); }}>
             {added ? <Check size={16} /> : <ShoppingBag size={16} />} {added ? "Added to bag" : "Add to bag"}
           </button>
+          {active < hoodies.length && <Link className="shop-inspect" href={studioPath(active)} prefetch={false}>Inspect garment</Link>}
           <div className="wheel-controls" aria-label="Browse products">
             <button onClick={() => select(wrapIndex(active - 1))}>Prev</button>
             <div className="wheel-positions" aria-label="Jump to a product">

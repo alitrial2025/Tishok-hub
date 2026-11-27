@@ -1,74 +1,10 @@
 "use client";
 
-import { Check, Focus, Ruler, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { useState } from "react";
-import { campaigns, hoodies, products, sizes } from "./catalog";
+import { campaigns, products, sizes } from "./catalog";
 import { imagePath } from "./media";
 import Signature from "./signature";
-
-const measurements = [
-  ["S", 57, 66, 58],
-  ["M", 60, 69, 60],
-  ["L", 63, 72, 62],
-  ["XL", 66, 75, 64],
-];
-
-function FitGuide() {
-  const [inches, setInches] = useState(false);
-  return <>
-    <div className="fit-angles">
-      <figure><img src={imagePath("orange-front")} alt="Signal Hoodie front silhouette" width="508" height="508" /><figcaption>Front</figcaption></figure>
-      <figure><img src={imagePath("orange-side")} alt="Signal Hoodie side silhouette" width="508" height="508" /><figcaption>Side</figcaption></figure>
-    </div>
-    <div className="measurement-heading"><h3>Garment measurements</h3><div className="studio-switch" aria-label="Units">
-      <button onClick={() => setInches(false)} aria-pressed={!inches}>CM</button><button onClick={() => setInches(true)} aria-pressed={inches}>IN</button>
-    </div></div>
-    <p>Relaxed through the chest with a dropped shoulder. Measure your favorite hoodie flat across the chest for comparison.</p>
-    <table className="measurements">
-      <caption className="sr-only">Reference garment measurements in {inches ? "inches" : "centimeters"}</caption>
-      <thead><tr><th scope="col">Size</th><th scope="col">Chest laid flat</th><th scope="col">Body length</th><th scope="col">Sleeve</th></tr></thead>
-      <tbody>{measurements.map(([size, ...values]) => <tr key={size}><th scope="row">{size}</th>{values.map((value, index) => <td key={index}>{inches ? (value / 2.54).toFixed(1) : value}</td>)}</tr>)}</tbody>
-    </table>
-    <p className="fit-footnote">Reference measurements for the Signal Hoodie. Styling reference: size L on a 183 cm frame.</p>
-  </>;
-}
-
-export function GarmentPanel({ index, initialSize, initialView, onAdd, onTry }) {
-  const [view, setView] = useState(initialView);
-  const [detail, setDetail] = useState(false);
-  const [size, setSize] = useState(initialSize);
-  const [added, setAdded] = useState(false);
-  const item = hoodies[index];
-  const image = detail ? "orange-detail" : item.file;
-
-  return <div className="garment-content">
-    <div className="studio-switch garment-switch" aria-label="Garment information">
-      <button aria-pressed={view === "inspect"} onClick={() => setView("inspect")}><Focus size={15} /> Inspect</button>
-      <button aria-pressed={view === "fit"} onClick={() => setView("fit")}><Ruler size={15} /> Fit guide</button>
-    </div>
-    {view === "fit" ? <FitGuide /> : <>
-      <div className="garment-grid">
-        <div className="garment-visual" style={{ "--inspection-placeholder": `url("${imagePath(`thumb-${image}`)}")` }}>
-          <img key={image} className="studio-reveal" src={imagePath(image)} alt={detail ? "Signal Orange cotton stitching and distressed print" : `${item.name} hoodie from the back`} width="508" height="508" />
-          <button className="garment-zoom" onClick={() => setDetail(current => !current)} aria-pressed={detail}><Focus size={16} /> {detail ? "Show garment" : "Fabric close-up"}</button>
-        </div>
-        <div className="garment-spec">
-          <p className="studio-label">{item.name}</p>
-          <h3>Signal Hoodie</h3>
-          <p>Heavyweight cotton with a brushed interior, dropped shoulders, and a distressed back print.</p>
-          <dl><div><dt>Weight</dt><dd>480 GSM</dd></div><div><dt>Fit</dt><dd>Relaxed</dd></div><div><dt>Material</dt><dd>Cotton</dd></div></dl>
-          {detail && index !== 0 && <p className="fit-footnote">Fabric close-up shown in Signal Orange.</p>}
-        </div>
-      </div>
-      <div className="garment-actions">
-        <div className="studio-switch" aria-label="Choose size">{sizes.map(option => <button key={option} aria-pressed={option === size} onClick={() => { setSize(option); setAdded(false); }}>{option}</button>)}</div>
-        <button className="studio-secondary" onClick={() => onTry(index, size)}>Show on model</button>
-        <button className="primary" onClick={() => { onAdd([{ product: index, size, quantity: 1 }]); setAdded(true); }}>{added ? <Check size={16} /> : <ShoppingBag size={16} />} {added ? "Added" : `Add to bag · $${item.price}`}</button>
-        <span className="sr-only" role="status">{added ? `${item.name} in size ${size} added to your bag.` : ""}</span>
-      </div>
-    </>}
-  </div>;
-}
 
 const chapters = [
   { title: "The silhouette", line: "A dropped shoulder and a wide body leave room to move.", image: campaigns[0], alt: "Model in the Signal Orange hoodie against concrete", product: 0 },

@@ -72,7 +72,7 @@ jobs:
 
           for (let attempt = 1; ; attempt++) {
             try {
-              await Promise.all([verify(""), verify("shop/")]);
+              await Promise.all(["", "shop/", "studio/orange/"].map(verify));
               break;
             } catch (error) {
               if (attempt === 12) throw error;

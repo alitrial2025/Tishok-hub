@@ -3,16 +3,17 @@
 import { Check, Crosshair, Menu, Shirt, ShoppingBag, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import useBag from "./use-bag";
 import Logo from "./wordmark";
+import HoodieFrame from "./hoodie-frame";
 import Signature from "./signature";
 import { useEffect, useRef, useState } from "react";
 import Clothesline, { garmentImage } from "./clothesline";
-import { campaigns, hoodies, sizes } from "./catalog";
+import { campaigns, hoodies, sizes, studioPath } from "./catalog";
 import { imagePath } from "./media";
 
 const Workshop = dynamic(() => import("./field-notes").then(module => module.Workshop), { loading: StudioLoading, ssr: false });
-const GarmentPanel = dynamic(() => import("./field-notes").then(module => module.GarmentPanel), { loading: StudioLoading, ssr: false });
 const Lookbook = dynamic(() => import("./field-notes").then(module => module.Lookbook), { loading: StudioLoading, ssr: false });
 const Bag = dynamic(() => import("./bag"), { loading: StudioLoading, ssr: false });
 
@@ -21,16 +22,31 @@ function StudioLoading() {
 }
 
 const photos = [
-  { alt: "Signal Orange hoodie, back view", file: "orange-back" },
+  { alt: "Signal Orange hoodie, back view", file: "orange-back", feature: "feature-0", cutout: true },
   { alt: "Signal Orange hoodie, front view", file: "orange-front" },
   { alt: "Signal Orange hoodie, side view", file: "orange-side" },
-  { alt: "Washed Coal hoodie, back view", file: "coal-back" },
-  { alt: "Concrete hoodie, back view", file: "concrete-back" },
-  { alt: "Signal Orange hoodie, fabric detail", file: "orange-detail" },
+  { alt: "Washed Coal hoodie, back view", file: "coal-back", feature: "feature-1", cutout: true },
+  { alt: "Concrete hoodie, back view", file: "concrete-back", feature: "feature-2", cutout: true },
+  { alt: "Signal Orange hoodie, fabric detail", file: "orange-detail", feature: "feature-detail" },
 ];
 
 function ProductImage({ index, thumbnail = false, ...props }) {
-  return <img src={imagePath(`${thumbnail ? "thumb-" : ""}${photos[index].file}`)} alt={photos[index].alt} width={thumbnail ? 96 : 508} height={thumbnail ? 96 : 508} decoding="async" {...props} />;
+  const photo = photos[index];
+  const file = thumbnail ? `thumb-${photo.file}` : photo.feature || photo.file;
+  const size = thumbnail ? 96 : photo.cutout ? 360 : photo.feature ? 384 : 508;
+  return <img src={imagePath(file)} alt={photo.alt} width={size} height={size} decoding="async" {...props} />;
+}
+
+function campaignMedia(index) {
+  const file = campaigns[index];
+  const src = imagePath(file);
+  return {
+    src,
+    srcSet: `${imagePath(`${file}-compact`)} 1080w, ${src} 1440w`,
+    sizes: "(max-width: 1080px) 1080px, 100vw",
+    width: 1440,
+    height: 960,
+  };
 }
 
 function outfitPoints(frame, campaign, mobile) {
@@ -111,6 +127,7 @@ async function flyHoodie(index, frame, campaign, reverse, signal) {
 }
 
 export default function Storefront() {
+  const router = useRouter();
   const [product, setProduct] = useState(2);
   const [photo, setPhoto] = useState(hoodies[2].image);
   const [worn, setWorn] = useState(0);
@@ -127,10 +144,8 @@ export default function Storefront() {
   const { bag, count, addItems, changeQuantity } = useBag();
   const [added, setAdded] = useState(false);
   const [panel, setPanel] = useState(null);
-  const [inspection, setInspection] = useState({ index: 0, view: "inspect" });
   const [workshopVisible, setWorkshopVisible] = useState(false);
   const workshop = useRef(null);
-  const pendingTry = useRef(null);
   const dialog = useRef(null);
   const addTimer = useRef(null);
 
@@ -171,27 +186,25 @@ export default function Storefront() {
     setPhoto(index);
   }
 
-  function openInspection(index, view = "inspect") {
-    setInspection({ index, view });
-    setPanel("inspect");
+  function openInspection(index) {
+    setPanel(null);
+    router.push(studioPath(index));
   }
 
-  function showOnModel(index, newSize) {
-    pendingTry.current = { index, size: newSize };
-    setPanel(null);
-  }
-
-  function closeDialog() {
-    const request = pendingTry.current;
-    pendingTry.current = null;
-    setPanel(null);
-    if (!request || swap.current) return;
-    selectProduct(request.index);
-    setSize(request.size);
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const index = hoodies.findIndex(item => item.id === url.searchParams.get("try"));
+    if (index === -1) return;
+    const selectedSize = url.searchParams.get("size");
+    url.searchParams.delete("try");
+    url.searchParams.delete("size");
+    window.history.replaceState(window.history.state, "", url);
+    selectProduct(index);
+    if (sizes.includes(selectedSize)) setSize(selectedSize);
     productFrame.current.scrollIntoView({ block: "center", behavior: "instant" });
     fitButton.current.focus({ preventScroll: true });
-    changeOutfit(false, request.index, hoodies[request.index].image);
-  }
+    changeOutfit(false, index, hoodies[index].image);
+  }, []);
 
   async function changeOutfit(reverse = false, selected = product, selectedPhoto = photo) {
     if (swap.current || (reverse ? !previousFit : selected === worn)) return;
@@ -201,9 +214,15 @@ export default function Storefront() {
     const nextCard = hoodies.findIndex((_, index) => index !== selected && index !== worn);
     const next = reverse ? previousFit : { worn: selected, product: nextCard, photo: hoodies[nextCard].image };
     const incoming = new Image();
-    incoming.src = imagePath(campaigns[next.worn]);
+    const media = campaignMedia(next.worn);
+    incoming.sizes = media.sizes;
+    incoming.srcset = media.srcSet;
+    incoming.src = media.src;
     const ready = incoming.decode().then(() => true, () => false);
-    const cancelLoad = () => incoming.removeAttribute("src");
+    const cancelLoad = () => {
+      incoming.removeAttribute("srcset");
+      incoming.removeAttribute("src");
+    };
     controller.signal.addEventListener("abort", cancelLoad, { once: true });
 
     try {
@@ -245,8 +264,8 @@ export default function Storefront() {
     <main>
       <section className="hero" id="top">
         <div className="campaign-art" ref={campaign} aria-hidden="true">
-          {outgoingWorn !== null && <img key={`outgoing-${outgoingWorn}`} src={imagePath(campaigns[outgoingWorn])} alt="" width="1536" height="1024" className="outgoing-campaign" />}
-          <img key={worn} src={imagePath(campaigns[worn])} alt="" data-active="true" width="1536" height="1024" className={outgoingWorn !== null ? "incoming-campaign" : undefined} onAnimationEnd={() => setOutgoingWorn(null)} fetchPriority="high" />
+          {outgoingWorn !== null && <img key={`outgoing-${outgoingWorn}`} {...campaignMedia(outgoingWorn)} alt="" className="outgoing-campaign" />}
+          <img key={worn} {...campaignMedia(worn)} alt="" data-active="true" className={outgoingWorn !== null ? "incoming-campaign" : undefined} onAnimationEnd={() => setOutgoingWorn(null)} fetchPriority="high" />
         </div>
         <header className="header wrap">
           <a className="brand" href="#top" aria-label="Tishok Hub home"><Logo /></a>
@@ -277,21 +296,24 @@ export default function Storefront() {
           <div className="feature" id="featured">
             <article className="product-card" aria-label="Featured hoodie">
               <div className="card-kicker"><span><i /> FEATURED PIECE</span><span>{String(product + 1).padStart(2, "0")} / 03</span></div>
-              <div className="product-frame" ref={productFrame} data-swapping={swapping}>
-                <ProductImage key={arrival} index={photo} fetchPriority="high" className={arrival ? "card-arrival" : undefined} />
-                <div className="outfit-controls">
-                  <button className="fit-button" ref={fitButton} aria-disabled={swapping || product === worn} onClick={() => changeOutfit()}><Shirt size={15} /> {product === worn ? "On model" : "Try on model"}</button>
-                  {previousFit && <button className="fit-undo" aria-disabled={swapping} onClick={() => changeOutfit(true)}>Undo</button>}
-                </div>
-                <span className="photo-number">{String(photo + 1).padStart(2, "0")} / 06</span>
+              <div className="product-frame" ref={productFrame} data-swapping={swapping} data-cutout={Boolean(photos[photo].cutout)}>
+                <HoodieFrame />
+                <ProductImage key={arrival} index={photo} className={arrival ? "card-arrival" : undefined} />
               </div>
-              <span className="sr-only" role="status">{fitMessage}</span>
               <div className="product-info">
+                <div className="product-actions">
+                  <div className="outfit-controls">
+                    <button className="fit-button" ref={fitButton} aria-disabled={swapping || product === worn} onClick={() => changeOutfit()}><Shirt size={15} /> {product === worn ? "On model" : "Try on model"}</button>
+                    {previousFit && <button className="fit-undo" aria-disabled={swapping} onClick={() => changeOutfit(true)}>Undo</button>}
+                  </div>
+                  <span className="photo-number">{String(photo + 1).padStart(2, "0")} / 06</span>
+                </div>
+                <span className="sr-only" role="status">{fitMessage}</span>
                 <div className="product-title"><h2>Signal Hoodie</h2><strong>${hoodies[product].price}</strong></div>
                 <div className="product-variant"><span>{hoodies[product].name}</span><div className="swatches" aria-label="Color">
                   {hoodies.map((entry, index) => <button key={entry.name} aria-label={entry.name} aria-pressed={product === index} disabled={swapping} style={{ "--swatch": entry.color }} onClick={() => selectProduct(index)} />)}
                 </div></div>
-                <button className="fit-guide-link" onClick={() => openInspection(product, "fit")}>Fit guide</button>
+                <Link className="fit-guide-link" href={studioPath(product, "fit")} prefetch={false}>Fit guide</Link>
                 <div className="sizes" aria-label="Size">
                   {sizes.map(option => <button key={option} aria-pressed={size === option} onClick={() => { setSize(option); setAdded(false); }}>{option}</button>)}
                 </div>
@@ -340,15 +362,14 @@ export default function Storefront() {
         </div>
       </footer>
 
-      <dialog ref={dialog} className={panel === "lookbook" || panel === "inspect" ? "dialog studio-dialog" : "dialog drawer"} aria-labelledby="panel-title" onCancel={event => { event.preventDefault(); setPanel(null); }} onClose={closeDialog} onClick={event => { if (event.target === event.currentTarget) setPanel(null); }}>
+      <dialog ref={dialog} className={panel === "lookbook" ? "dialog studio-dialog" : "dialog drawer"} aria-labelledby="panel-title" onCancel={event => { event.preventDefault(); setPanel(null); }} onClose={() => setPanel(null)} onClick={event => { if (event.target === event.currentTarget) setPanel(null); }}>
         <div className="dialog-content">
           <div className="dialog-header">
-            <h2 id="panel-title">{panel === "bag" ? "Your bag" : panel === "lookbook" ? "Field Notes / 01" : panel === "inspect" ? "Garment studio" : panel === "menu" ? "Menu" : "About Tishok Hub"}</h2>
+            <h2 id="panel-title">{panel === "bag" ? "Your bag" : panel === "lookbook" ? "Field Notes / 01" : panel === "menu" ? "Menu" : "About Tishok Hub"}</h2>
             <button className="icon-button" aria-label="Close panel" onClick={() => setPanel(null)}><X size={22} /></button>
           </div>
           {panel === "bag" && <Bag items={bag} onQuantity={changeQuantity} onClose={() => setPanel(null)} />}
           {panel === "lookbook" && <Lookbook onInspect={openInspection} />}
-          {panel === "inspect" && <GarmentPanel key={`${inspection.index}-${inspection.view}`} index={inspection.index} initialView={inspection.view} initialSize={size} onAdd={addItems} onTry={showOnModel} />}
           {panel === "about" && <div className="about-copy"><div className="section-label"><span /> Tishok Hub STUDIOS</div><p>Tishok Hub is an independent streetwear label focused on heavyweight fabrics, relaxed silhouettes, and industrial graphics.</p><p>Drop 01 starts with a single piece in three colors. The Signal Hoodie is cut from 480 GSM cotton.</p><Link className="primary" href="/shop" onClick={() => setPanel(null)}>Shop the drop</Link></div>}
           {panel === "menu" && <nav className="mobile-nav" aria-label="Mobile navigation"><a href="#top" onClick={() => setPanel(null)}>Home</a><Link href="/shop" onClick={() => setPanel(null)}>Shop</Link><a href="#workshop" onClick={() => setPanel(null)}>Build a fit</a><button onClick={() => setPanel("lookbook")}>Lookbook</button><button onClick={() => setPanel("about")}>About</button></nav>}
         </div>
