@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import useBag from "./use-bag";
 import Logo from "./wordmark";
+import Signature from "./signature";
 import { useEffect, useRef, useState } from "react";
 import Clothesline, { garmentImage } from "./clothesline";
 import { campaigns, hoodies, sizes } from "./catalog";
@@ -248,7 +249,7 @@ export default function Storefront() {
           <img key={worn} src={imagePath(campaigns[worn])} alt="" data-active="true" width="1536" height="1024" className={outgoingWorn !== null ? "incoming-campaign" : undefined} onAnimationEnd={() => setOutgoingWorn(null)} fetchPriority="high" />
         </div>
         <header className="header wrap">
-          <a className="brand" href="#top" aria-label="OFF/FORM home"><Logo /></a>
+          <a className="brand" href="#top" aria-label="Tishok Hub home"><Logo /></a>
           <nav className="nav" aria-label="Main navigation">
             <a className="current" href="#top">Home</a>
             <Link href="/shop" prefetch={false}>Shop</Link>
@@ -270,10 +271,7 @@ export default function Storefront() {
               <Link className="primary" href="/shop" prefetch={false}>Shop the drop</Link>
               <button className="lookbook-link" onClick={() => setPanel("lookbook")}>View lookbook</button>
             </div>
-            <div className="founder-signature">
-              <span className="signature">Ari Mercer</span>
-              <span className="signature-caption">FOUNDER &amp; CEO, OFF/FORM</span>
-            </div>
+            <Signature caption />
           </div>
 
           <div className="feature" id="featured">
@@ -308,19 +306,19 @@ export default function Storefront() {
         </div>
 
         <div className="hero-footer wrap">
-          <div className="campaign"><Crosshair size={16} /><span>OFF/FORM STUDIOS<small> VOL. 01 — FIELD NOTES</small></span></div>
+          <div className="campaign"><Crosshair size={16} /><span>Tishok Hub STUDIOS<small> VOL. 01 — FIELD NOTES</small></span></div>
           <a href="#collection" className="scroll-link">EXPLORE THE RAIL</a>
 
         </div>
       </section>
 
       <div className="ticker" aria-label="Drop 01, Uniform for the Unruly">
-        {[0, 1, 2].map(index => <div className="ticker-group" key={index} aria-hidden="true"><span>DROP 01</span><Crosshair size={17} /><span>UNIFORM FOR THE UNRULY</span><Crosshair size={17} /><span>OFF/FORM STUDIOS</span><Crosshair size={17} /></div>)}
+        {[0, 1, 2].map(index => <div className="ticker-group" key={index} aria-hidden="true"><span>DROP 01</span><Crosshair size={17} /><span>UNIFORM FOR THE UNRULY</span><Crosshair size={17} /><span>Tishok Hub STUDIOS</span><Crosshair size={17} /></div>)}
       </div>
 
       <section className="collection rail-campaign" id="collection">
         <div className="rail-heading wrap">
-          <div className="rail-edition"><span>OFF/FORM STUDIOS</span><span>SIGNAL SERIES / 01</span></div>
+          <div className="rail-edition"><span>Tishok Hub STUDIOS</span><span>SIGNAL SERIES / 01</span></div>
           <h2>The Signal Series<span>.</span></h2>
           <p>Three heavyweight hoodies. One relaxed silhouette.</p>
         </div>
@@ -329,27 +327,27 @@ export default function Storefront() {
 
       <section className="workshop" id="workshop">
         <div className="wrap">
-          <div className="workshop-heading"><div><p className="studio-label">OFF/FORM FIT STUDIO</p><h2>Build a fit<span>.</span></h2></div><p>Start with the Signal Hoodie. Add cargos and a cap to see the full look on the campaign model.</p></div>
+          <div className="workshop-heading"><div><p className="studio-label">Tishok Hub FIT STUDIO</p><h2>Build a fit<span>.</span></h2></div><p>Start with the Signal Hoodie. Add cargos and a cap to see the full look on the campaign model.</p></div>
           <div ref={workshop} className="workshop-slot">{workshopVisible && <Workshop onAdd={addItems} onInspect={openInspection} />}</div>
         </div>
       </section>
 
       <footer className="footer">
         <div className="wrap footer-inner">
-          <a href="#top" aria-label="OFF/FORM home"><Logo /></a><span>INDEPENDENT STREETWEAR</span><a href="#top">Back to top</a>
+          <a href="#top" aria-label="Tishok Hub home"><Logo /></a><span>INDEPENDENT STREETWEAR</span><a href="#top">Back to top</a>
         </div>
       </footer>
 
       <dialog ref={dialog} className={panel === "lookbook" || panel === "inspect" ? "dialog studio-dialog" : "dialog drawer"} aria-labelledby="panel-title" onCancel={event => { event.preventDefault(); setPanel(null); }} onClose={closeDialog} onClick={event => { if (event.target === event.currentTarget) setPanel(null); }}>
         <div className="dialog-content">
           <div className="dialog-header">
-            <h2 id="panel-title">{panel === "bag" ? "Your bag" : panel === "lookbook" ? "Field Notes / 01" : panel === "inspect" ? "Garment studio" : panel === "menu" ? "Menu" : "About OFF/FORM"}</h2>
+            <h2 id="panel-title">{panel === "bag" ? "Your bag" : panel === "lookbook" ? "Field Notes / 01" : panel === "inspect" ? "Garment studio" : panel === "menu" ? "Menu" : "About Tishok Hub"}</h2>
             <button className="icon-button" aria-label="Close panel" onClick={() => setPanel(null)}><X size={22} /></button>
           </div>
           {panel === "bag" && <Bag items={bag} onQuantity={changeQuantity} onClose={() => setPanel(null)} />}
           {panel === "lookbook" && <Lookbook onInspect={openInspection} />}
           {panel === "inspect" && <GarmentPanel key={`${inspection.index}-${inspection.view}`} index={inspection.index} initialView={inspection.view} initialSize={size} onAdd={addItems} onTry={showOnModel} />}
-          {panel === "about" && <div className="about-copy"><div className="section-label"><span /> OFF/FORM STUDIOS</div><p>OFF/FORM is an independent streetwear label focused on heavyweight fabrics, relaxed silhouettes, and industrial graphics.</p><p>Drop 01 starts with a single piece in three colors. The Signal Hoodie is cut from 480 GSM cotton.</p><Link className="primary" href="/shop" onClick={() => setPanel(null)}>Shop the drop</Link></div>}
+          {panel === "about" && <div className="about-copy"><div className="section-label"><span /> Tishok Hub STUDIOS</div><p>Tishok Hub is an independent streetwear label focused on heavyweight fabrics, relaxed silhouettes, and industrial graphics.</p><p>Drop 01 starts with a single piece in three colors. The Signal Hoodie is cut from 480 GSM cotton.</p><Link className="primary" href="/shop" onClick={() => setPanel(null)}>Shop the drop</Link></div>}
           {panel === "menu" && <nav className="mobile-nav" aria-label="Mobile navigation"><a href="#top" onClick={() => setPanel(null)}>Home</a><Link href="/shop" onClick={() => setPanel(null)}>Shop</Link><a href="#workshop" onClick={() => setPanel(null)}>Build a fit</a><button onClick={() => setPanel("lookbook")}>Lookbook</button><button onClick={() => setPanel("about")}>About</button></nav>}
         </div>
       </dialog>

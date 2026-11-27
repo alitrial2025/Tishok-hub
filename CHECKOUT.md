@@ -1,4 +1,4 @@
-# OFF/FORM checkout
+# Tishok Hub checkout
 
 The storefront uses Shopify Storefront Cart API for stock checks and hosted checkout. Set these variables in the server runtime or `.env.local` for development.
 

@@ -4,6 +4,7 @@ import { Check, Focus, Ruler, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { campaigns, hoodies, products, sizes } from "./catalog";
 import { imagePath } from "./media";
+import Signature from "./signature";
 
 const measurements = [
   ["S", 57, 66, 58],
@@ -88,7 +89,7 @@ export function Lookbook({ onInspect }) {
         <p className="studio-label">Field Notes / 01</p>
         <h3>{entry.title}</h3><p>{entry.line}</p>
         <button className="studio-secondary" onClick={() => onInspect(entry.product)}>Inspect the hoodie</button>
-        {chapter === chapters.length - 1 && <div className="signature">Ari Mercer</div>}
+        {chapter === chapters.length - 1 && <Signature />}
       </div>
     </div>
   </div>;

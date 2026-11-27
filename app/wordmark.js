@@ -1,3 +1,3 @@
 export default function Logo() {
-  return <span className="wordmark">OFF<span>/</span>FORM<sup>™</sup></span>;
+  return <span className="wordmark"><span className="wordmark-glyph" aria-hidden="true" /><span className="wordmark-type">TISHOK <span>HUB</span></span></span>;
 }

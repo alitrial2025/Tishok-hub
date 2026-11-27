@@ -68,7 +68,7 @@ export default function Shop() {
 
   return <main className="shop-page">
     <header className="header wrap shop-header">
-      <Link className="brand" href="/" aria-label="OFF/FORM home"><Logo /></Link>
+      <Link className="brand" href="/" aria-label="Tishok Hub home"><Logo /></Link>
       <nav className="nav" aria-label="Main navigation"><Link href="/">Home</Link><Link href="/shop" className="current" aria-current="page">Shop</Link></nav>
       <div className="header-actions"><button className="bag-control" onClick={openBag}><ShoppingBag size={15} /> Bag <span className="bag-count">{count}</span></button></div>
     </header>
@@ -108,7 +108,7 @@ export default function Shop() {
       </div>
     </section>
 
-    <footer className="footer"><div className="wrap footer-inner"><Link href="/" aria-label="OFF/FORM home"><Logo /></Link><Link href="/#collection">Explore the rail</Link></div></footer>
+    <footer className="footer"><div className="wrap footer-inner"><Link href="/" aria-label="Tishok Hub home"><Logo /></Link><Link href="/#collection">Explore the rail</Link></div></footer>
 
     <dialog ref={drawer} className="dialog drawer" aria-labelledby="shop-bag-title" onClose={() => setBagOpen(false)} onClick={event => { if (event.target === drawer.current) closeBag(); }}>
       <div className="dialog-content"><div className="dialog-header"><h2 id="shop-bag-title">Your bag</h2><button className="icon-button" aria-label="Close bag" onClick={closeBag}><X size={22} /></button></div>
