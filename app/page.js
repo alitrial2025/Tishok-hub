@@ -49,12 +49,13 @@ function campaignMedia(index) {
   };
 }
 
-function outfitPoints(frame, campaign, mobile) {
+function outfitPoints(frame, campaign) {
   const card = frame.getBoundingClientRect();
   const stage = campaign.getBoundingClientRect();
-  const scale = mobile ? stage.height / 1024 : Math.max(stage.width / 1536, stage.height / 1024);
+  const scale = Math.max(stage.width / 1536, stage.height / 1024);
+  const position = Number.parseFloat(getComputedStyle(campaign.querySelector("img")).objectPosition) / 100;
   const model = {
-    x: stage.left + (stage.width - 1536 * scale) * (mobile ? 0.52 : 0.5) + 792 * scale,
+    x: stage.left + (stage.width - 1536 * scale) * position + 792 * scale,
     y: stage.top + 505 * scale,
     width: 292 * scale,
   };
@@ -89,9 +90,9 @@ async function flyHoodie(index, frame, campaign, reverse, signal) {
   if (signal.aborted || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   const mobile = matchMedia("(max-width: 760px)").matches;
-  if (mobile) await centerOutfit(outfitPoints(frame, campaign, mobile), signal);
+  if (mobile) await centerOutfit(outfitPoints(frame, campaign), signal);
   if (signal.aborted) return;
-  const { model, product } = outfitPoints(frame, campaign, mobile);
+  const { model, product } = outfitPoints(frame, campaign);
   const [from, to] = reverse ? [model, product] : [product, model];
   const sprite = document.createElement("img");
   sprite.src = garmentImage(index);

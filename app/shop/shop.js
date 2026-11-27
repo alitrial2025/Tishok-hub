@@ -109,22 +109,26 @@ export default function Shop() {
     <section className="shop-sheet wrap" aria-labelledby="shop-title">
       <div className="shop-paper">
         <div className="shop-paper-content">
-          <p className="studio-label shop-label"><span /> COLLECTION / 01</p>
-          <h1 id="shop-title">The<br />Drop<span>.</span></h1>
-          <div className="shop-product" aria-live="polite">
-            <div key={product.id} className="shop-product-copy"><h2>{product.title}</h2><p>{product.name} · ${product.price}</p></div>
+          <div className="shop-intro">
+            <p className="studio-label shop-label"><span /> COLLECTION / 01</p>
+            <h1 id="shop-title">The<br />{" "}Drop<span>.</span></h1>
           </div>
-          <div className="shop-sizes" aria-label="Choose size">{product.sizes.map(option => <button key={option} aria-pressed={size === option} onClick={() => { setSize(option); setAdded(false); }}>{option}</button>)}</div>
-          <button className="primary" onClick={() => { addItems([{ product: active, size, quantity: 1 }]); setAdded(true); }}>
-            {added ? <Check size={16} /> : <ShoppingBag size={16} />} {added ? "Added to bag" : "Add to bag"}
-          </button>
-          {active < hoodies.length && <Link className="shop-inspect" href={studioPath(active)} prefetch={false}>Inspect garment</Link>}
-          <div className="wheel-controls" aria-label="Browse products">
-            <button onClick={() => select(wrapIndex(active - 1))}>Prev</button>
-            <div className="wheel-positions" aria-label="Jump to a product">
-              {products.map((entry, index) => <button key={entry.id} type="button" aria-label={`Show ${entry.title}, ${entry.name}`} aria-pressed={index === active} onClick={() => select(index)} />)}
+          <div className="shop-details">
+            <div className="shop-product" aria-live="polite">
+              <div key={product.id} className="shop-product-copy"><h2>{product.title}</h2><p>{product.name} · ${product.price}</p></div>
             </div>
-            <button onClick={() => select(wrapIndex(active + 1))}>Next</button>
+            <div className="shop-sizes" aria-label="Choose size">{product.sizes.map(option => <button key={option} aria-pressed={size === option} onClick={() => { setSize(option); setAdded(false); }}>{option}</button>)}</div>
+            <button className="primary" onClick={() => { addItems([{ product: active, size, quantity: 1 }]); setAdded(true); }}>
+              {added ? <Check size={16} /> : <ShoppingBag size={16} />} {added ? "Added to bag" : "Add to bag"}
+            </button>
+            {active < hoodies.length && <Link className="shop-inspect" href={studioPath(active)} prefetch={false}>Inspect garment</Link>}
+            <div className="wheel-controls" aria-label="Browse products">
+              <button onClick={() => select(wrapIndex(active - 1))}>Prev</button>
+              <div className="wheel-positions" aria-label="Jump to a product">
+                {products.map((entry, index) => <button key={entry.id} type="button" aria-label={`Show ${entry.title}, ${entry.name}`} aria-pressed={index === active} onClick={() => select(index)} />)}
+              </div>
+              <button onClick={() => select(wrapIndex(active + 1))}>Next</button>
+            </div>
           </div>
         </div>
       </div>

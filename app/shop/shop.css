@@ -56,6 +56,8 @@
 .shop-wheel {
   --wheel-axis: 34%;
   --wheel-radius: min(38cqw, 33cqh);
+  --wheel-axis-y: 50%;
+  --wheel-home: 0deg;
   --wheel-drag: 0deg;
   --wheel-duration: .64s;
   --wheel-ease: cubic-bezier(.2,.75,.22,1);
@@ -71,7 +73,7 @@
 .wheel-ring {
   position: absolute;
   left: var(--wheel-axis);
-  top: 50%;
+  top: var(--wheel-axis-y);
   width: calc(var(--wheel-radius) * 2);
   aspect-ratio: 1;
   border-radius: 50%;
@@ -88,20 +90,20 @@
   border-radius: 50%;
   background: conic-gradient(from 40deg, #ff663c 0deg 26deg, transparent 26deg), repeating-conic-gradient(from 90deg, #ebd6ba90 0deg 1deg, transparent 1deg 7.5deg);
   mask-image: radial-gradient(closest-side, transparent calc(100% - 7px), #000 calc(100% - 6px) 100%, transparent 100%);
-  transform: rotate(calc(var(--wheel-turn) + var(--wheel-drag)));
+  transform: rotate(calc(var(--wheel-home) + var(--wheel-turn) + var(--wheel-drag)));
   transition: transform var(--wheel-duration) var(--wheel-ease);
 }
 .wheel-ring::after { content: ""; position: absolute; inset: 16px; border-radius: 50%; border: 1px solid #f5f1ea20; }
 .wheel-axle { position: absolute; inset: 46%; display: grid; place-items: center; border-radius: 50%; border: 1px solid #ddc1a28c; box-shadow: 0 0 0 7px #f5f1ea0b; }
 .wheel-axle::after { content: ""; width: 20%; aspect-ratio: 1; border-radius: 50%; background: #f5dfc3; }
 .wheel-piece {
-  --orbit: calc(var(--piece-angle) + var(--wheel-turn) + var(--wheel-drag));
+  --orbit: calc(var(--wheel-home) + var(--piece-angle) + var(--wheel-turn) + var(--wheel-drag));
   display: grid;
   place-items: center;
   position: absolute;
   z-index: 1;
   left: var(--wheel-axis);
-  top: 50%;
+  top: var(--wheel-axis-y);
   width: 41%;
   height: 35%;
   padding: 0;
@@ -132,58 +134,69 @@
 .wheel-caption { position: absolute; z-index: 3; bottom: 0; right: 0; left: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 17px 13px 50px; background: linear-gradient(0deg, #1b1712db, transparent); color: #e1d1bf; font: 9px var(--mono); letter-spacing: .13em; pointer-events: none; }
 .wheel-caption b { color: var(--orange); font-weight: 400; }
 @media (max-width: 760px) {
-  .shop-header { grid-template-columns: 1fr auto auto; gap: 8px; padding-bottom: 14px; }
-  .shop-header .nav { display: flex; }
-  .shop-header .nav a { padding: 7px 6px; font-size: 11px; }
-  .shop-header .bag-control { padding: 4px 5px; gap: 4px; font-size: 11px; }
+  .shop-header { grid-template-columns: 1fr auto auto; gap: 7px; padding-bottom: 14px; }
+  .shop-header .nav { display: flex; border-color: #efe6da37; padding: 2px; }
+  .shop-header .nav a { min-height: 34px; display: grid; place-items: center; padding: 4px 8px; font-size: 11px; }
+  .shop-header .bag-control { min-height: 36px; padding: 4px 6px; gap: 4px; font-size: 11px; }
   .shop-header .bag-count { min-width: 18px; height: 18px; }
-  .shop-header .wordmark { font-size: clamp(19px, 5.75vw, 26px); }
-  .shop-sheet { grid-template-columns: 1fr; min-height: auto; }
-  .shop-paper {
-    --tear: polygon(0 0, 100% 0, 100% 97%, 94% 96%, 87% 98%, 77% 97%, 68% 99%, 56% 96%, 47% 97%, 36% 95%, 27% 97%, 15% 96%, 7% 98%, 0 97%);
-    min-height: 230px;
-    align-items: start;
-    filter: drop-shadow(2px 7px 7px #100c0877);
+  .shop-header .wordmark { font-size: clamp(18px, 5.4vw, 25px); }
+  .shop-sheet { grid-template-columns: minmax(0, 1fr); width: min(calc(100% - 24px), 495px); min-height: auto; margin-bottom: 22px; border-radius: 17px; background: #2d241d; }
+  .shop-paper, .shop-paper-content { display: contents; }
+  .shop-paper::before, .shop-paper::after { display: none; }
+  .shop-intro { grid-row: 1; padding: 16px 17px 8px; color: var(--paper); }
+  .shop-label { margin: 0 0 8px; color: #e0ccb7; font-size: 9px; }
+  .shop-paper h1 { margin: 0; font-size: clamp(44px, 13vw, 69px); line-height: .86; letter-spacing: -.065em; }
+  .shop-paper h1 br { display: none; }
+  .shop-paper h1 span { color: var(--orange); }
+  .shop-wheel {
+    grid-row: 2;
+    --wheel-axis: 50%;
+    --wheel-axis-y: 58%;
+    --wheel-radius: min(34cqw, 134px);
+    --wheel-home: -90deg;
+    height: clamp(308px, 89vw, 375px);
+    background: radial-gradient(ellipse at 50% 47%, #7a6048, #3a2c22 47%, #2d241d 87%);
   }
-  .shop-paper::before, .shop-paper::after { inset: 0 0 -18px; }
-  .shop-paper::before { transform: translateY(2px); background: linear-gradient(90deg, #bcaf99, #f2e9d9, #b3a590); }
-  .shop-paper-content { display: grid; grid-template-columns: 1fr 1fr; align-items: center; column-gap: 10px; padding: 20px 16px 23px; }
-  .shop-label { grid-column: 1 / -1; margin-bottom: 10px; font-size: 8px; }
-  .shop-paper h1 { grid-row: 2 / span 3; margin: 0; font-size: clamp(54px, 16vw, 88px); }
-  .shop-product { min-height: auto; margin-bottom: 7px; }
-  .shop-product p { font-size: 12px; }
-  .shop-sizes { margin-bottom: 7px; }
-  .shop-sizes button { min-width: 27px; min-height: 27px; padding: 3px 5px; }
-  .shop-paper .primary { padding: 8px; gap: 5px; font-size: 11px; }
-  .wheel-controls { grid-column: 2; margin-top: 9px; gap: 6px; }
-  .wheel-controls > button { min-width: 26px; min-height: 27px; padding: 3px 4px; }
-  .wheel-positions { gap: 1px; }
-  .wheel-positions button { width: clamp(12px, 3.4vw, 16px); }
-  .wheel-caption { padding-left: 13px; }
-  .shop-wheel { --wheel-axis: 31%; min-height: clamp(340px, 105vw, 520px); }
-}
-
-@supports (clip-path: shape(from 0 0, line to 100% 0, close)) {
-  @media (max-width: 760px) {
-    .shop-paper {
-      --tear: shape(from 0 0, line to 100% 0, line to 100% 97%,
-        curve to 92% 96% with 97% 98% / 95% 95%,
-        curve to 85% 98% with 89% 96% / 89% 99%,
-        curve to 76% 97% with 81% 97% / 80% 96%,
-        curve to 66% 98.5% with 73% 98% / 68% 99%,
-        curve to 56% 96% with 63% 98% / 60% 95.5%,
-        curve to 46% 97% with 51% 96% / 50% 98%,
-        curve to 35% 95.7% with 42% 96% / 40% 94.8%,
-        curve to 27% 96.8% with 32% 96.5% / 30% 97.4%,
-        curve to 16% 96% with 23% 96.4% / 20% 94.8%,
-        curve to 7% 97.8% with 13% 97% / 11% 98.4%,
-        curve to 0 97% with 4% 97% / 2% 96.5%, close);
-    }
+  .wheel-piece { width: 58%; height: 49%; }
+  .wheel-piece[data-position="0"] img { transform: translateY(15%) scale(1.13); }
+  .wheel-piece[data-position="-1"] img, .wheel-piece[data-position="1"] img { transform: rotate(var(--piece-tilt)) scale(.63); }
+  .wheel-caption { padding: 7px 15px 14px; }
+  .shop-details {
+    grid-row: 3;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px 9px;
+    position: relative;
+    z-index: 1;
+    padding: 9px 15px 16px;
+    background: radial-gradient(ellipse at 20% 25%, #fff8ea 1%, #eee4d5 91%);
   }
+  .shop-details::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -8px;
+    height: 9px;
+    pointer-events: none;
+    background: #f9f1e3;
+    clip-path: polygon(0 44%, 8% 51%, 15% 23%, 22% 37%, 30% 13%, 37% 29%, 46% 15%, 53% 57%, 60% 40%, 66% 60%, 74% 24%, 82% 50%, 90% 38%, 100% 48%, 100% 100%, 0 100%);
+  }
+  .shop-product { grid-column: 1 / -1; min-height: auto; margin: 0; }
+  .shop-product h2 { font-size: 26px; }
+  .shop-product p { font-size: 13px; }
+  .shop-sizes { grid-column: 1 / -1; margin: 0; gap: 6px; }
+  .shop-sizes button { min-width: 38px; min-height: 37px; }
+  .shop-details .primary { min-height: 43px; padding: 8px 13px; gap: 6px; }
+  .wheel-controls { grid-column: 1 / -1; grid-row: 1; justify-content: space-between; gap: 4px; margin: 0 0 1px; padding-bottom: 8px; border-bottom: 1px solid #5241333b; }
+  .wheel-controls > button { min-width: 48px; min-height: 35px; }
+  .wheel-positions { gap: 3px; }
+  .wheel-positions button { width: clamp(17px, 5vw, 23px); height: 35px; }
 }
 
 .shop-inspect { display: inline-block; margin: 9px 0 0 12px; font-size: 11px; font-weight: 700; text-decoration: underline; text-decoration-color: #aa371d; text-underline-offset: 3px; }
 .shop-inspect:hover { color: #9a2e18; }
 @media (max-width: 760px) {
-  .shop-inspect { grid-column: 2; margin: 6px 0 0; }
+  .shop-inspect { grid-column: 2; justify-self: end; margin: 0; font-size: 11px; }
 }
