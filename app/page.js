@@ -301,20 +301,22 @@ export default function Storefront() {
                 <ProductImage key={arrival} index={photo} className={arrival ? "card-arrival" : undefined} />
               </div>
               <div className="product-info">
-                <div className="outfit-controls">
-                  <button className="fit-button" ref={fitButton} aria-disabled={swapping || product === worn} onClick={() => changeOutfit()}><Shirt size={15} /> {product === worn ? "On model" : "Try on model"}</button>
-                  {previousFit && <button className="fit-undo" aria-disabled={swapping} onClick={() => changeOutfit(true)}>Undo</button>}
+                <div className="product-wheel">
+                  <div className="swatches" role="group" aria-label="Color">
+                    {hoodies.map((entry, index) => <button key={entry.name} aria-label={entry.name} aria-pressed={product === index} disabled={swapping} style={{ "--swatch": entry.color }} onClick={() => selectProduct(index)} />)}
+                  </div>
+                  <div className="wheel-center">
+                    <button className="fit-button" ref={fitButton} aria-disabled={swapping || product === worn} onClick={() => changeOutfit()}><Shirt size={15} /> {product === worn ? "On model" : "Try on model"}</button>
+                    <button className="add" onClick={addToBag} disabled={swapping}>{added ? "Added to bag" : "Add to bag"} {added ? <Check size={15} /> : <ShoppingBag size={14} />}</button>
+                    {previousFit && <button className="fit-undo" aria-disabled={swapping} onClick={() => changeOutfit(true)}>Undo try-on</button>}
+                  </div>
+                  <div className="sizes" role="group" aria-label="Size">
+                    {sizes.map(option => <button key={option} aria-pressed={size === option} onClick={() => { setSize(option); setAdded(false); }}>{option}</button>)}
+                  </div>
                 </div>
-                <span className="sr-only" role="status">{fitMessage}</span>
                 <div className="product-title"><h2>Signal Hoodie</h2><strong>${hoodies[product].price}</strong></div>
-                <div className="product-variant"><span>{hoodies[product].name}</span><div className="swatches" aria-label="Color">
-                  {hoodies.map((entry, index) => <button key={entry.name} aria-label={entry.name} aria-pressed={product === index} disabled={swapping} style={{ "--swatch": entry.color }} onClick={() => selectProduct(index)} />)}
-                </div></div>
-                <Link className="fit-guide-link" href={studioPath(product, "fit")} prefetch={false}>Fit guide</Link>
-                <div className="sizes" aria-label="Size">
-                  {sizes.map(option => <button key={option} aria-pressed={size === option} onClick={() => { setSize(option); setAdded(false); }}>{option}</button>)}
-                </div>
-                <button className="add" onClick={addToBag} disabled={swapping}>{added ? "Added to bag" : "Add to bag"} {added ? <Check size={16} /> : <ShoppingBag size={15} />}</button>
+                <div className="product-variant"><span>{hoodies[product].name}</span><Link className="fit-guide-link" href={studioPath(product, "fit")} prefetch={false}>Fit guide</Link></div>
+                <span className="sr-only" role="status">{fitMessage}</span>
                 <span className="sr-only" role="status">{added ? `${hoodies[product].name} hoodie in size ${size} added to your bag` : ""}</span>
               </div>
             </article>
